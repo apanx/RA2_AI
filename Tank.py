@@ -95,6 +95,13 @@ class Tank(AI.SuperAI):
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
+        if AI.SuperAI.debugging:
+            speed = self.GetSpeed()
+            self.DebugString(4, "Speed = " + str(speed))
+
+            turning_speed = self.GetTurning()
+            self.DebugString(5, "TSpeed = " + str(turning_speed))
+
         for trigger in self.triggers:
             self.Input(trigger, 0, 0)
         Target, range = self.GetNearestEnemy()
@@ -218,6 +225,13 @@ class FlameTank(Tank):
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
+        if AI.SuperAI.debugging:
+            speed = self.GetSpeed()
+            self.DebugString(4, "Speed = " + str(speed))
+
+            turning_speed = self.GetTurning()
+            self.DebugString(5, "TSpeed = " + str(turning_speed))
+
         for trigger in self.secondary:
             self.Input(trigger, 0, 0)
         for trigger in self.triggers:
@@ -246,6 +260,13 @@ class MGTank(Tank):
     name = "MGTank"
 
     def Tick(self):
+        if AI.SuperAI.debugging:
+            speed = self.GetSpeed()
+            self.DebugString(4, "Speed = " + str(speed))
+
+            turning_speed = self.GetTurning()
+            self.DebugString(5, "TSpeed = " + str(turning_speed))
+
         Target, range = self.GetNearestEnemy()
         if Target != None:
             Winkel = (self.GetHeadingToID(Target, False) + self.GetMotorAngle(self.Motor) * self.DSL)
