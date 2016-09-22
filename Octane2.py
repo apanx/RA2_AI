@@ -19,7 +19,7 @@ class Octane2(AI.SuperAI):
                
         self.zone = "weapon"
         self.triggers = ["Fire"]
-	self.trigger2 = ["Srimech"]
+        self.trigger2 = ["Srimech"]
         self.reloadTime = 0
         self.reloadDelay = 3
         

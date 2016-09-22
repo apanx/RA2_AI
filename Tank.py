@@ -10,7 +10,7 @@ class Annoy(AI.Tactic):
     name = "Annoy"
     def __init__(self, ai):
         AI.Tactic.__init__(self, ai)
-        
+
         self.regroupPos = None
         self.regroupDir = True
         self.regroupTime = 0
@@ -18,34 +18,34 @@ class Annoy(AI.Tactic):
     def Evaluate(self):
         self.priority = 0
         self.target_id, range = self.ai.GetNearestEnemy()
-        
+
         if self.target_id != None:
             self.priority = 80
         else:
             self.priority -= 100
-                
+
     def Execute(self):
         if self.target_id != None:
             self.ai.enemy_id = self.target_id
 
             clear_path = False
-            
-            if self.regroupTime <= 0:    
+
+            if self.regroupTime <= 0:
                 for r in (3, -3, 2, -2, 4, -4, 1, -1, 5, -5):
                     angle = self.ai.GetHeading(True) + r * (math.pi / 6)
                     new_dir = vector3(math.sin(angle), 0, math.cos(angle))
                     dest = vector3(self.ai.GetLocation()) + new_dir * 5
-                    
+
                     clear_path = self.ai.IsStraightPathClear(dest.asTuple(), self.ai.GetLocation())
                     if clear_path:
                         self.regroupPos = dest.asTuple()
                         self.regroupDir = (abs(r) <= 3)
                         self.regroupTime = 40
                         break
-                
+
             self.ai.DriveToLocation(self.regroupPos, self.regroupDir)
             self.regroupTime -= 1
-            
+
             return True
         else:
             return False
@@ -65,7 +65,7 @@ class Tank(AI.SuperAI):
 
         self.triggerIterator = iter(self.triggers)
         self.tactics.append(Annoy(self))
-        
+
     def Activate(self, active):
         self.tickInterval = 0.05
         if active:
@@ -91,7 +91,7 @@ class Tank(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line9", 0, 135, 250, 15)
                 tbox.setText("")
-                
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -121,26 +121,26 @@ class Tank(AI.SuperAI):
             elif id == 7: self.debug.get("line7").setText(string)
             elif id == 8: self.debug.get("line8").setText(string)
             elif id == 9: self.debug.get("line9").setText(string)
-            
+
     def Aim(self, level):
-        
+
         level = min(max(level, -100), 100)
 
         self.Input('Aim', 0, level)
         self.DebugString(9, "Aim = " + str(int(level)))
-        
+
     def AimTowards(self, heading, in_reverse = False):
         THRESHOLD = .05
         dreh = 0
-        
+
         if heading > math.pi: heading -= 2 * math.pi
         elif heading < -math.pi: heading += 2 * math.pi
-        
+
         if (heading < -THRESHOLD or heading > THRESHOLD):
-            
+
             dire = -1
             if heading < 0: dire = 1
-            
+
             h = min(abs(heading), 1.75)
             dreh = dire * (int((h / 1.5) * 100)+50)
 
@@ -165,12 +165,12 @@ class Tank(AI.SuperAI):
                 dir = vector3(self.GetDirection())
                 self.DriveToLocation((pos + dir * 3).asTuple())
                 yield 0
-                
+
     def InvertHandler(self):
         # fire SRM once per two seconds (until we're upright!)
         while 1:
             self.Input("SRM", 0, 1)
-            
+
             for i in range(0, 40):
                 yield 0
 
@@ -187,8 +187,8 @@ class FlameTank(Tank):
         if 'triggers' in args: self.triggers = args['triggers']
         if 'motor' in args: self.Motor = args['motor']
         if 'secondary' in args: self.secondary = args['secondary']
-        
-        
+
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -214,9 +214,9 @@ class FlameTank(Tank):
                 tbox = self.debug.addText("line9", 0, 135, 250, 15)
                 tbox.setText("")
                 self.RegisterSmartZone(self.zone, 1)
-                
+
         return AI.SuperAI.Activate(self, active)
-        
+
     def Tick(self):
         for trigger in self.secondary:
             self.Input(trigger, 0, 0)
@@ -259,9 +259,9 @@ class MGTank(Tank):
                     self.triggerIterator = iter(self.triggers)
                     trigger = self.triggerIterator.next()
             self.Input(trigger, 0, 1)
-                
+
         return AI.SuperAI.Tick(self)
-                
+
 AI.register(Tank)
 AI.register(FlameTank)
 AI.register(MGTank)

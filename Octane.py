@@ -13,16 +13,16 @@ class Octane(AI.SuperAI):
     "FIIIIRREEEE."
 
     # JoeBlo Design #
-	#Note by Naryar: This .py file is part of JoeBlo's world domination plan ! We better all watch out...
+    #Note by Naryar: This .py file is part of JoeBlo's world domination plan ! We better all watch out...
 
     name = "Octane"
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-        
-        self.ENEMY = 0        
-        self.ENEMY = 1        
-        self.ENEMY = 2        
+
+        self.ENEMY = 0
+        self.ENEMY = 1
+        self.ENEMY = 2
         self.ENEMY = 3
         self.Angle = 0
 
@@ -42,7 +42,7 @@ class Octane(AI.SuperAI):
 
         self.SD = 1
         if 'SpinDirection(-1/1)' in args: self.SD = args.get('SpinDirection(-1/1)')
-       
+
         self.ReMobilizeRoutineTime = 40
         if 'ReMobilizeRoutineTime(10-60)' in args: self.ReMobilizeRoutineTime = args.get('ReMobilizeRoutineTime(10-60)')
 
@@ -64,11 +64,11 @@ class Octane(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 10, 45, 100, 15)
                 tbox.setText("")
-                tbox = self.debug.addText("line4", 10, 60, 250, 15) 
+                tbox = self.debug.addText("line4", 10, 60, 250, 15)
                 tbox.setText("")
                 tbox = self.debug.addText("line5", 10, 75, 250, 15)
                 tbox.setText("")
-                tbox = self.debug.addText("line6", 10, 90, 250, 15) 
+                tbox = self.debug.addText("line6", 10, 90, 250, 15)
                 tbox.setText("")
                 tbox = self.debug.addText("line7", 10, 105, 250, 15)
                 tbox.setText("")
@@ -78,7 +78,7 @@ class Octane(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line10", 10, 150, 250, 15)
                 tbox.setText("")
-            
+
 #            self.SAY_1 = plus.createSound("Sounds/Count_1.wav", True, (0,0,0)) # Indicator.
 #            self.SAY_2 = plus.createSound("Sounds/Count_2.wav", True, (0,0,0)) # Indicator.
 #            self.SAY_3 = plus.createSound("Sounds/Count_3.wav", True, (0,0,0)) # Indicator.
@@ -115,44 +115,44 @@ class Octane(AI.SuperAI):
         if self.ThisAI_bImmobile == 0: # If Immobility is off:   -------------------------------------
 
             if self.PreSpinEntranceTimer < self.PreSpinEntrance:  # Jut out initially.
-                self.PreSpinEntranceTimer += 1        
+                self.PreSpinEntranceTimer += 1
                 if self.Angle < 1 and self.Angle > -1: # If pointed toward enemy...
                     self.Input("LeftRight", 0, 0)
                     self.Input("Forward", 0, 100) # then Go.
                     self.Input("Spin", 0, 0)
 
             if self.PreSpinEntranceTimer >= self.PreSpinEntrance:  # Start Spinning.
-                if enemy is not None    and range < self.spin_range    and self.weapons: 
+                if enemy is not None    and range < self.spin_range    and self.weapons:
                     self.Input("LeftRight", 0, 0)
-                    self.Input("Forward", 0, 0) 
+                    self.Input("Forward", 0, 0)
                     self.Input("Spin", 0, -200*self.SD) # Spin
 
 
- 
+
         if self.ThisAI_bImmobile == 1: # If Immobility is on:  -------------------------------------
 
             self.ImmobileCounter += 1  # Then start counting....
 
-            if self.ImmobileCounter == 1:   # Stop Spinning.   
+            if self.ImmobileCounter == 1:   # Stop Spinning.
                 self.Input("Spin", 0, 120*self.SD)
                 #self.Input("LeftRight", 0, -100)
-                
-            if self.ImmobileCounter >= self.ReMobilizeRoutineTime*0.2:   # go backward for a designated time.    
+
+            if self.ImmobileCounter >= self.ReMobilizeRoutineTime*0.2:   # go backward for a designated time.
                 self.Input("Spin", 0, 0)
                 self.Input("LeftRight", 0, 0)
                 self.Input("Ahead", 0, -100)
-            
-            if self.ImmobileCounter >= self.ReMobilizeRoutineTime*0.6:  # go forward for a designated time.    
+
+            if self.ImmobileCounter >= self.ReMobilizeRoutineTime*0.6:  # go forward for a designated time.
                 self.Input("Spin", 0, 0)
                 self.Input("LeftRight", 0, 0)
                 self.Input("Ahead", 0, 100)
-                    
-            if self.ImmobileCounter >= self.ReMobilizeRoutineTime:  # Reset everything:    
+
+            if self.ImmobileCounter >= self.ReMobilizeRoutineTime:  # Reset everything:
                 self.ImmobileCounter = 0
 
         else:
             self.ThisAI_bImmobile = 0
-            self.ImmobileCounter = 0     
+            self.ImmobileCounter = 0
 
 
         return AI.SuperAI.Tick(self)
@@ -160,7 +160,7 @@ class Octane(AI.SuperAI):
 
 
 
-    def ImmobilityWarning(self, id, on): 
+    def ImmobilityWarning(self, id, on):
         if id == self.GetID():
             if on:
                 self.ThisAI_bImmobile = 1
@@ -184,15 +184,15 @@ class Octane(AI.SuperAI):
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
 
 
@@ -205,7 +205,7 @@ class Octane(AI.SuperAI):
             elif id == 3: self.debug.get("line3").setText(string)
             elif id == 4: self.debug.get("line4").setText(string)
             elif id == 5: self.debug.get("line5").setText(string)
-            elif id == 6: self.debug.get("line6").setText(string) 
+            elif id == 6: self.debug.get("line6").setText(string)
             elif id == 7: self.debug.get("line7").setText(string)
             elif id == 8: self.debug.get("line8").setText(string)
             elif id == 9: self.debug.get("line9").setText(string)

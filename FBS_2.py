@@ -24,9 +24,9 @@ class FBS_2(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.tactics.append(Tactics.Engage(self))
-        
+
         self.spin_range = 50
         self.turn_range = 3
         self.PreSpinEntrance = 0
@@ -46,16 +46,16 @@ class FBS_2(AI.SuperAI):
             self.turn_range = args.get('fbs_range')
         if 'SRcycle' in args:
             self.cycletime = args.get('SRcycle')
-        
+
         self.thwackFunction = self.ThwackLeft
-        
+
         if 'clockwise' in args: self.thwackFunction = self.ThwackRight
-        
+
         self.pulsetime = 0
         if 'Pulse' in args: self.pulsetime = args.get('Pulse')
         self.pulse = self.pulsetime
         if 'Coast' in args: self.pulsetime2 = args.get('Coast')
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -73,7 +73,7 @@ class FBS_2(AI.SuperAI):
         else:
             # get rid of reference to self
             self.thwackFunction = None
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -86,10 +86,10 @@ class FBS_2(AI.SuperAI):
         # Keep track of last time we got hit, ignoring small damage from walls and stuff.
         if self.GetLastDamageReceived()[1] > 100:
             self.timeOfLastBadHit = self.GetLastDamageReceived()[2]
-            
+
         # Count time since last hit
         self.TimeSinceHit = min((plus.getTimeElapsed() - self.timeOfLastGoodHit), (plus.getTimeElapsed() - self.timeOfLastBadHit))
-        
+
         #Self right
         if self.IsUpsideDown() and not self.bInvertible:
             self.cycle += 1
@@ -104,23 +104,23 @@ class FBS_2(AI.SuperAI):
 
         # define targets
         targets = []
-        
+
         targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
             and not plus.isDefeated(x.robot)]
-                       
+
         bReturn = AI.SuperAI.Tick(self)
-            
+
         # call this now so it takes place after other driving commands
         if self.thwackFunction: self.thwackFunction(len(targets) > 0)
-        
+
         return bReturn
-        
+
     def ThwackLeft(self, bTarget):
         if self.weapons:
 
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
-            
+
             if not self.bImmobile:
                 if self.pulsetime > 0:
                     # Keep spinner on constantly when we're thwacking
@@ -149,7 +149,7 @@ class FBS_2(AI.SuperAI):
             else:
                 if self.bInvertible or not self.IsUpsideDown():
                     self.Input("Spin", 0, 0)
-                        
+
             # Full body spin if we're in range, not immobile, out of our starting spot, and still hitting stuff.
             if enemy is not None and range < self.turn_range and self.PreSpinEntranceTimer >= self.PreSpinEntrance and self.TimeSinceHit <= self.ChaseTime and not self.bImmobile:
                 self.Turn(-100)
@@ -159,13 +159,13 @@ class FBS_2(AI.SuperAI):
                 if self.turnreset == 0:
                     self.Turn(0)
                     self.turnreset = 1
-            
+
     def ThwackRight(self, bTarget):
         if self.weapons:
 
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
-            
+
             if not self.bImmobile:
                 if self.pulsetime > 0:
                     # Keep spinner on constantly when we're thwacking
@@ -194,7 +194,7 @@ class FBS_2(AI.SuperAI):
             else:
                 if self.bInvertible or not self.IsUpsideDown():
                     self.Input("Spin", 0, 0)
-                        
+
             # Full body spin if we're in range, not immobile, out of our starting spot, and still hitting stuff.
             if enemy is not None and range < self.turn_range and self.PreSpinEntranceTimer >= self.PreSpinEntrance and self.TimeSinceHit <= self.ChaseTime and not self.bImmobile:
                 self.Turn(100)
@@ -204,21 +204,21 @@ class FBS_2(AI.SuperAI):
                 if self.turnreset == 0:
                     self.Turn(0)
                     self.turnreset = 1
-            
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-            
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -226,5 +226,5 @@ class FBS_2(AI.SuperAI):
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
             elif id == 4: self.debug.get("line4").setText(string)
-    
+
 AI.register(FBS_2)

@@ -21,9 +21,9 @@ class Bumblebee(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.tactics.append(Tactics.Engage(self))
-        
+
         self.spin_range = 50
         self.turn_range = 3
 
@@ -35,18 +35,18 @@ class Bumblebee(AI.SuperAI):
         self.ChaseTime = 60
         if 'chase_time' in args:
             self.ChaseTime = args.get('chase_time')
-        
+
         if 'range' in args:
             self.spin_range = args.get('range')
         if 'fbs_range' in args:
             self.turn_range = args.get('fbs_range')
-        
+
         self.thwackFunction = self.ThwackLeft
-        
+
         if 'right' in args:
             if args['right'] == "1": self.thwackFunction = self.ThwackRight
             else: self.thwackFunction = self.ThwackLeft
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -64,7 +64,7 @@ class Bumblebee(AI.SuperAI):
         else:
             # get rid of reference to self
             self.thwackFunction = None
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -79,24 +79,24 @@ class Bumblebee(AI.SuperAI):
 
         # define targets
         targets = []
-        
+
         if self.weapons:
             targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-                       
+
         bReturn = AI.SuperAI.Tick(self)
-            
+
         # call this now so it takes place after other driving commands
         if self.thwackFunction: self.thwackFunction(len(targets) > 0)
-        
+
         return bReturn
-        
+
     def ThwackLeft(self, bTarget):
         if self.weapons:
 
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
-            
+
             if enemy is not None and range < self.spin_range:
                 self.Input("Spin", 0, 1)
             elif self.GetInputStatus("Spin", 0) != 0:
@@ -105,13 +105,13 @@ class Bumblebee(AI.SuperAI):
             # Full body spin if we're in range, not immobile, out of our starting spot, and still hitting stuff.
             if enemy is not None and range < self.turn_range and self.bImmobile == False and self.PreSpinEntranceTimer >= self.PreSpinEntrance and self.TimeSinceHit <= self.ChaseTime:
                 self.Turn(-100)
-            
+
     def ThwackRight(self, bTarget):
         if self.weapons:
 
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
-            
+
             if enemy is not None and range < self.spin_range:
                 self.Input("Spin", 0, 1)
             elif self.GetInputStatus("Spin", 0) != 0:
@@ -120,7 +120,7 @@ class Bumblebee(AI.SuperAI):
             # Full body spin if we're in range, not immobile, out of our starting spot, and still hitting stuff.
             if enemy is not None and range < self.turn_range and self.bImmobile == False and self.PreSpinEntranceTimer >= self.PreSpinEntrance and self.TimeSinceHit <= self.ChaseTime:
                 self.Turn(100)
-                
+
     def Turn(self, turning):
         turning = min(max(turning, -100), 100)
 
@@ -128,21 +128,21 @@ class Bumblebee(AI.SuperAI):
         self.Input('LeftRight', 0, -turning)
         self.Input('LeftRight', 1, turning)
         self.DebugString(1, "Turning = " + str(int(turning)))
-            
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-            
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -150,5 +150,5 @@ class Bumblebee(AI.SuperAI):
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
             elif id == 4: self.debug.get("line4").setText(string)
-    
+
 AI.register(Bumblebee)

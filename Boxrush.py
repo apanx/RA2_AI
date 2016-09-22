@@ -15,13 +15,13 @@ class Boxrush(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-        
+
         self.spin_range = 3.0
         self.prevx = 0
         self.prevy = 0
         self.watermelon = 0
         self.immocounter = 0
-        
+
         if 'range' in args: self.spin_range = args.get('range')
 
         self.triggerSRM = "Srimech"
@@ -45,7 +45,7 @@ class Boxrush(AI.SuperAI):
                 tbox.setText("")
 
             #self.SRM_Indicator = plus.createSound("Sounds/snowplow_hit.wav", True, (0,0,0)) # Indicator.
-            
+
         return AI.SuperAI.Activate(self, active)
 
 
@@ -66,7 +66,7 @@ class Boxrush(AI.SuperAI):
                 self.watermelon = 0
 
             enemy, range = self.GetNearestEnemy()
-            
+
             if enemy is not None and range < self.spin_range and self.weapons and self.bImmobile == False and self.immocounter < 50:
                 self.Input("Shove", 0, 100)
             else:
@@ -83,7 +83,7 @@ class Boxrush(AI.SuperAI):
 #        if self.TESTER == True:
 #            plus.playSound(self.SRM_Indicator) # Let me know if it's working...
 
-            
+
         return AI.SuperAI.Tick(self)
 
 
@@ -95,7 +95,7 @@ class Boxrush(AI.SuperAI):
         elif id in self.immobile_list:
             self.Input("Shove", 0, 0)
             del self.immobile_list[id]
-            
+
         if id == self.GetID():
             # keep track of our own immobility warning
             self.Input("Shove", 0, 0)
@@ -112,7 +112,7 @@ class Boxrush(AI.SuperAI):
             for trigger in self.triggerSRM: self.Input(trigger, 0, 1)
             #self.TESTER = True
             #plus.playSound(self.SRM_Indicator) # Let me know if it's working...
-            
+
             for i in range(0, 8):
                 yield 0
 
@@ -138,10 +138,10 @@ class Boxrush(AI.SuperAI):
                 pos = vector3(self.GetLocation())
                 dir = vector3(self.GetDirection())
                 self.DriveToLocation((pos - dir * 3).asTuple(), True)
-                yield 0	
+                yield 0
 
 
-        
+
     def LostComponent(self, id):
         #print "Lost Component!"
         return AI.SuperAI.LostComponent(self, id)
@@ -151,15 +151,15 @@ class Boxrush(AI.SuperAI):
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
 
 

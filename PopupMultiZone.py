@@ -15,10 +15,10 @@ class PopupMultiZone(AI.SuperAI):
     # weaponX is associated with FireX ie : ennemy in customzone weapon3 -> do the action associated with Fire3
     # You may also change the default tactics (engage) by specify in the bindings.py 'tactic': XXX
     # with XXX = "Charge", "Engage", "Shove", "Ram"
-	# Ripped off Popup.py and OmniMultiZone.py by Naryar
+    # Ripped off Popup.py and OmniMultiZone.py by Naryar
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.trigger2 = ["Srimech"]
         self.botinzone1 = 0
         self.compinzone1 = 0
@@ -33,21 +33,21 @@ class PopupMultiZone(AI.SuperAI):
         self.comptimer3 = 0
         self.comptimer4 = 0
         self.NoChassisTime = 8
-        
+
         if 'NoChassisTime' in args: self.NoChassisTime = args.get('NoChassisTime') * 4
-        
+
         self.triggerIterator = iter(self.triggers)
 
-        if 'tactic' in args: 
+        if 'tactic' in args:
             self.theTactic = args['tactic']
             if   self.theTactic  == "Charge" : self.tactics.append(Tactics.Charge(self))
             elif self.theTactic  == "Ram" : self.tactics.append(Tactics.Ram(self))
-            elif self.theTactic  == "Shove" : self.tactics.append(Tactics.Shove(self))             
+            elif self.theTactic  == "Shove" : self.tactics.append(Tactics.Shove(self))
             elif self.theTactic  == "Engage" : self.tactics.append(Tactics.Engage(self))
             else: self.tactics.append(Tactics.Engage(self))
         else: self.tactics.append(Tactics.Engage(self))
 
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -60,12 +60,12 @@ class PopupMultiZone(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
             self.RegisterSmartZone("weapon1", 1)
             self.RegisterSmartZone("weapon2", 2)
             self.RegisterSmartZone("weapon3", 3)
             self.RegisterSmartZone("weapon4", 4)
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -73,52 +73,52 @@ class PopupMultiZone(AI.SuperAI):
 
         targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-        
+
         # if a component is in the first smart zone but not the chassis, wait to find chassis before firing weapons
         if self.compinzone1 == 1 and self.botinzone1 == 0:
             self.comptimer1 += 1
-            
+
         if self.botinzone1 == 1:
             self.comptimer1 = 0
-            
+
         if self.weapons and (self.botinzone1 == 1 or (self.comptimer1 >= self.NoChassisTime and self.compinzone1 == 1)):
             for trigger in self.triggers1: self.Input("Fire1", 0, 1)
-			
-		# if a component is in the second smart zone but not the chassis, wait to find chassis before firing weapons
+
+        # if a component is in the second smart zone but not the chassis, wait to find chassis before firing weapons
         if self.compinzone2 == 1 and self.botinzone2 == 0:
             self.comptimer2 += 1
-            
+
         if self.botinzone2 == 1:
             self.comptimer2 = 0
-            
+
         if self.weapons and (self.botinzone2 == 1 or (self.comptimer2 >= self.NoChassisTime and self.compinzone2 == 1)):
             for trigger in self.triggers1: self.Input("Fire2", 0, 1)
-			
-		# if a component is in the third smart zone but not the chassis, wait to find chassis before firing weapons
+
+        # if a component is in the third smart zone but not the chassis, wait to find chassis before firing weapons
         if self.compinzone3 == 1 and self.botinzone3 == 0:
             self.comptimer3 += 1
-            
+
         if self.botinzone3 == 1:
             self.comptimer3 = 0
-            
+
         if self.weapons and (self.botinzone3 == 1 or (self.comptimer3 >= self.NoChassisTime and self.compinzone3 == 1)):
             for trigger in self.triggers1: self.Input("Fire3", 0, 1)
-			
-		# if a component is in the fourth smart zone but not the chassis, wait to find chassis before firing weapons
+
+        # if a component is in the fourth smart zone but not the chassis, wait to find chassis before firing weapons
         if self.compinzone4 == 1 and self.botinzone4 == 0:
             self.comptimer4 += 1
-            
+
         if self.botinzone4 == 1:
             self.comptimer4 = 0
-            
+
         if self.weapons and (self.botinzone4 == 1 or (self.comptimer4 >= self.NoChassisTime and self.compinzone4 == 1)):
             for trigger in self.triggers1: self.Input("Fire4", 0, 1)
-                       
+
         bReturn = AI.SuperAI.Tick(self)
-        
+
         return bReturn
 
-            
+
         return AI.SuperAI.Tick(self)
 
     def InvertHandler(self):
@@ -126,24 +126,24 @@ class PopupMultiZone(AI.SuperAI):
         while 1:
             for trigger in self.trigger2:
                 self.Input(trigger, 0, 1)
-            
+
             for i in range(0, 8):
                 yield 0
-                
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-                
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -192,7 +192,7 @@ class PopupMultiZone(AI.SuperAI):
                     self.compinzone4 = 0
                     if chassis:
                         self.botinzone4 = 0
- 
+
         return True
-        
+
 AI.register(PopupMultiZone)

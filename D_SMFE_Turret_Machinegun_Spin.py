@@ -46,8 +46,8 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
         self.triggers = ["Fire"] #@@@@@@@@@@@@@@@@@@@@@
 
         self.zone9 = "ZoneFire3-4" # This is  2 Sequential triggers.
-        self.zone10 = "ZoneFire5-8"#  This is 4 Sequential triggers.                               
-        self.zone11 = "ZoneFire1-7"#  This is 7 Sequential triggers.  
+        self.zone10 = "ZoneFire5-8"#  This is 4 Sequential triggers.
+        self.zone11 = "ZoneFire1-7"#  This is 7 Sequential triggers.
 
         self.zone12 = "whipzone" #self.zone = "whipzone"
 
@@ -60,8 +60,8 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
         self.weptimerC = 0       ##
 
         #AAAAAAAAAAAAAAAAA
-        self.ongoingtimerAA = 0 
-        self.floor = 0  
+        self.ongoingtimerAA = 0
+        self.floor = 0
         self.altitude = 0 # default (if no Bindings setting)
         if 'altitude' in args: self.altitude = args.get('altitude') # for Bindings input #
         #AAAAAAAAAAAAAAAAA
@@ -105,15 +105,15 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
 
         self.Motor = 1 # default (if no Bindings setting)@@@@@@@@@@@@@@
         if 'motor' in args: self.Motor = args['motor'] #@@@@@@@@@@@@@@@@@@@
-        
+
         self.whipTimer = 0
         self.whipDir = 1
-        self.whipDirCount = 2        
+        self.whipDirCount = 2
         self.whipFunction = self.WhipBackAndForth # default (if no Bindings setting)
         if 'whip' in args:
             if args['whip'] == "around": self.whipFunction = self.WhipAround
             else: self.whipFunction = self.WhipBackAndForth
-            
+
         if 'triggers' in args: self.triggers1 = args['triggers']
         if 'triggers' in args: self.triggers2 = args['triggers']
         if 'triggers' in args: self.triggers3 = args['triggers']
@@ -126,13 +126,13 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
         if 'triggers' in args: self.triggers = args['triggers'] #@@@@@@@@@@@@@@@@
 
 
-        self.spin_range = 3.0        
+        self.spin_range = 3.0
         if 'range' in args:
             self.spin_range = args.get('range')
 
         self.tactics.append(Tactics.Engage(self))
 
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -145,7 +145,7 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-                tbox = self.debug.addText("line4", 0, 60, 250, 15) 
+                tbox = self.debug.addText("line4", 0, 60, 250, 15)
                 tbox.setText("")
                 tbox = self.debug.addText("line5", 0, 75, 250, 15)
                 tbox.setText("")
@@ -156,8 +156,8 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
                 tbox = self.debug.addText("line8", 0, 120, 250, 15)
                 tbox.setText("")
                 tbox = self.debug.addText("line9", 0, 135, 250, 15)
-                tbox.setText("")                                          
-            
+                tbox.setText("")
+
             self.RegisterSmartZone(self.zone1, 1)
             self.RegisterSmartZone(self.zone2, 2)
             self.RegisterSmartZone(self.zone3, 3)
@@ -171,11 +171,11 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
             self.RegisterSmartZone(self.zone10, 10)
             self.RegisterSmartZone(self.zone11, 11)
 
-            self.RegisterSmartZone(self.zone12, 12)            
+            self.RegisterSmartZone(self.zone12, 12)
         else:
             # get rid of reference to self
             self.whipFunction = None
-            
+
         return AI.SuperAI.Activate(self, active)
 
 
@@ -194,7 +194,7 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
         #@@@@@@@@@@@@@@@@@@@@@@
 
         #WWWWWWWWWWW
-        # 3 looping timers for sequential weapon activation (with Bindings input) 
+        # 3 looping timers for sequential weapon activation (with Bindings input)
         self.weptimerA += self.ACounter3thru4
         if self.weptimerA == self.AParameter3thru4:
             self.weptimerA = 0
@@ -210,9 +210,9 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
 
         #AAAAAAAAAAAAAAAAA
         if self.altitude > 0: # If there's an 'altitude' entry in Bindings...
-            self.ongoingtimerAA += 1   
+            self.ongoingtimerAA += 1
 
-            if self.ongoingtimerAA <2:  
+            if self.ongoingtimerAA <2:
                 self.floor = self.GetLocation()[1]
 
             if self.GetLocation()[1] < self.floor + self.altitude: # "self.altitude" added for Bindings input #
@@ -221,13 +221,13 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
 
 
         # fire weapon
-        targets = []        
+        targets = []
         if self.weapons:
             targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-                       
+
         bReturn = AI.SuperAI.Tick(self)
-            
+
         # call this now so it takes place after other driving commands
         if self.whipFunction: self.whipFunction(len(targets) > 0)
 
@@ -240,9 +240,9 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
             self.Input("Spin", 0, 0)
 
 
-        
+
         return bReturn
-        
+
 
     def InvertHandler(self):
         # fire weapon once per second (until we're upright!)
@@ -254,86 +254,86 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
             for trigger in self.triggers6: self.Input(trigger, 0, 6)
             for trigger in self.triggers7: self.Input(trigger, 0, 7)
             for trigger in self.triggers8: self.Input(trigger, 0, 8)
-            
+
             for i in range(0, 8):
                 yield 0
 
     def WhipBackAndForth(self, bTarget):
         if bTarget: self.whipTimer = 4
-        
+
         if self.whipTimer > 0:
             # Whip back and forth!
             if self.whipDir > 0: self.Turn(100)
             else: self.Turn(-100)
             self.Throttle(0)
-            
+
             self.whipDirCount -= 1
             if self.whipDirCount < 0:
                 self.whipDirCount = 2
                 self.whipDir = -self.whipDir
-            
+
             self.whipTimer -= 1
-            
+
     def WhipAround(self, bTarget):
         if bTarget: self.whipTimer = 4
         elif self.whipTimer == 0: self.whipDir = -self.whipDir
-        
+
         if self.whipTimer > 0:
             # Whip around!
             if self.whipDir > 0: self.Turn(100)
             else: self.Turn(-100)
             self.Throttle(0)
-            
+
             self.whipTimer -= 1
-            
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-            
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
             elif id == 1: self.debug.get("line1").setText(string)
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
-            elif id == 4: self.debug.get("line4").setText(string) 
+            elif id == 4: self.debug.get("line4").setText(string)
             elif id == 5: self.debug.get("line5").setText(string)
             elif id == 6: self.debug.get("line6").setText(string)
             elif id == 7: self.debug.get("line7").setText(string)
             elif id == 8: self.debug.get("line8").setText(string)
-            elif id == 9: self.debug.get("line9").setText(string) 
-    
+            elif id == 9: self.debug.get("line9").setText(string)
+
 
     #@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def Aim(self, level):
-        
+
         level = min(max(level, -100), 100)
 
         self.Input('Aim', 0, level)
         self.DebugString(9, "Aim = " + str(int(level)))
-        
+
     def AimTowards(self, heading, in_reverse = False):
         THRESHOLD = .05
         dreh = 0
-        
+
         if heading > math.pi: heading -= 2 * math.pi
         elif heading < -math.pi: heading += 2 * math.pi
-        
+
         if (heading < -THRESHOLD or heading > THRESHOLD):
-            
+
             dire = -1
             if heading < 0: dire = 1
-            
+
             h = min(abs(heading), 1.75)
             dreh = dire * (int((h / 1.5) * 100)+20)
 
@@ -378,11 +378,11 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
             if robot > 0:
                 if direction == 1:
                     for trigger in self.triggers8: self.Input(trigger, 0, 8)
-                   
+
         ##WWWWWWWWWWWWW --SEQUENTIAL FIRING --
-        # Fires multiple triggers(3-4). 
-#        elif id == 9 and self.weapons and self.weptimerA == self.ACounter3thru4:  
-        elif id == 9 and self.weapons and self.weptimerA == 0:  
+        # Fires multiple triggers(3-4).
+#        elif id == 9 and self.weapons and self.weptimerA == self.ACounter3thru4:
+        elif id == 9 and self.weapons and self.weptimerA == 0:
             if robot > 0:
                 if direction == 1:
                     for trigger in self.triggers3: self.Input(trigger, 0, 3)
@@ -392,7 +392,7 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
                    for trigger in self.triggers4: self.Input(trigger, 0, 4)
 
 
-        # Fires multiple triggers(5-8). 
+        # Fires multiple triggers(5-8).
 #        elif id == 10 and self.weapons and self.weptimerB == self.BCounter5thru8:
         elif id == 10 and self.weapons and self.weptimerB == 0:
             if robot > 0:
@@ -412,7 +412,7 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
                     for trigger in self.triggers8: self.Input(trigger, 0, 8)
 
 
-        # Fires multiple triggers(1-7). 
+        # Fires multiple triggers(1-7).
 #        elif id == 10 and self.weapons and self.weptimerC == self.CCounter1thru7:
         elif id == 11 and self.weapons and self.weptimerC == 0:
             if robot > 0:
@@ -451,9 +451,9 @@ class D_SMFE_Turret_Machinegun_Spin(AI.SuperAI):
 
 
         #self.zone = "whipzone"
-        elif id == 12: 
+        elif id == 12:
             if direction == 1:
-                AI.SuperAI.SmartZoneEvent(self, direction, id, robot, chassis) 
+                AI.SuperAI.SmartZoneEvent(self, direction, id, robot, chassis)
 
 
 

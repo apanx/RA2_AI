@@ -21,7 +21,7 @@ class NefariusAI(AI.SuperAI):
         self.__setattr__tickInterval__(0.01)
 
         self.teamedup = False
-        
+
         self.collection = []
         self.lastLoc = (0,0,0)
         self.oldTime = 0.0
@@ -38,7 +38,7 @@ class NefariusAI(AI.SuperAI):
         if 'teamtactics' in args:
             self.teamtactics = list(args['teamtactics'])
         else: self.teamtactics = []
-        
+
         if 'primarytactics' in args:
             self.primarytactics = list(args['primarytactics'])
         else: self.primarytactics = ["Engage"]
@@ -59,7 +59,7 @@ class NefariusAI(AI.SuperAI):
             #     check if class is a Tactic class
             #       check if tactic is in our list
             #         add tactic to our list
-            
+
             self.tactics.extend([eval("source.%s(self)" %x) for x in dir(source) \
                                  if isinstance(eval("source.%s" %x), type(AI.Tactic)) \
                                  if issubclass(eval("source.%s" %x), AI.Tactic) \
@@ -86,7 +86,7 @@ class NefariusAI(AI.SuperAI):
             allyIDs = [playerid for playerid in plus.getPlayers() if not playerid in self.GetEnemies() and playerid != self.GetID()]
             if allyIDs > 0: # Is there anyone else on my team?
                 allyAIs = [b for b in AI.running_ai if b.GetID() in allyIDs]
-                
+
                 if allyAIs: #if there are other AI bots
                     self.teamedup = True
                     for source in self.sources:
@@ -126,12 +126,12 @@ class NefariusAI(AI.SuperAI):
             # progressive averaging
             self.avgSpeed += (self.curSpeed-self.avgSpeed)/len(self.collection)
 
-    def GetSpeed(self): 
+    def GetSpeed(self):
         #True Speed (the original GetSpeed actually calculated the velocity)
         #Unfortunately, the original wasn't compatible with my bot.
         #TODO: Convert this to velocity so that we have a direction (for compatability reasons)
         return self.avgSpeed
-        
+
     def IsUpsideDown(self):
         return (self.GetDirection()[1] < 0)
 

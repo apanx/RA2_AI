@@ -7,7 +7,7 @@ import Gooey
 import math
 import Tactics
 
-  
+
 class ShiftWeapon3(AI.SuperAI):
     "the servo has 2, 3 or 4 'fixed' angle position. It shifts periodically from these"
     # usage : see joe bloe stock showcase in gametehcmods for sample usage.
@@ -29,7 +29,7 @@ class ShiftWeapon3(AI.SuperAI):
         self.servoTimer = 15 # rate of shifting, the higher -> the longer between 2 shifts
         self.servoCountDown = self.servoTimer # count down before shifting
         self.servoNumberOfPosition = 2 # number of position
-        self.servoAimAngle = 0 # angle the servo try to aim , each shift change this angle of 2*math.pi / (servoNumberOfPosition)  
+        self.servoAimAngle = 0 # angle the servo try to aim , each shift change this angle of 2*math.pi / (servoNumberOfPosition)
         self.delta = 0.05 #; error angle tolerance
         self.wellPositionned = True #:  if True, aiming angle reached : no more servo move until next shift
         self.Motor = 0
@@ -39,14 +39,14 @@ class ShiftWeapon3(AI.SuperAI):
         if 'zone'  in args:       self.zone = args['zone']
         if 'servodelta' in args:  self.delta=args['servodelta']
         if 'servospeed' in args:  self.servospeed=args['servospeed']
-        if 'servonose'  in args:  self.servoNose = args['servonose'] 
+        if 'servonose'  in args:  self.servoNose = args['servonose']
         if 'servoNbPos' in args:  self.servoNumberOfPosition = args['servoNbPos']
         if 'servoTimer' in args:  self.servoTimer = args['servoTimer']
         # to display the current angle of the servo motor uncomment thoses lines :
         self.debug = False
         AI.SuperAI.debugging = False
         self.tactics.append(Tactics.Engage(self))
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -81,7 +81,7 @@ class ShiftWeapon3(AI.SuperAI):
                 currentType =  self.GetComponentType(i)
                 if currentType == "ServoMotor": self.Motor = i
                 i = i+ 1
-            
+
             self.RegisterSmartZone(self.zone, 1)
         return AI.SuperAI.Activate(self, active)
 
@@ -93,44 +93,44 @@ class ShiftWeapon3(AI.SuperAI):
             self.Input("Spin", 0, 1)
         elif self.GetInputStatus("Spin", 0) != 0:
             self.Input("Spin", 0, 0)
-      
+
         self.flipflop = True #: not used indeed
-        
+
         if  self.flipflop :
             targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
             and not plus.isDefeated(x.robot)]
             if len(targets) > 0 : self.Input("Fire", 0, 1)
 
-      
+
         if self.ShiftConditionOk() and self.flipflop : #Time to shift ?
             # new angle to reach :
-            self.servoAimAngle = self.servoAimAngle + (math.pi * 2 / self.servoNumberOfPosition) 
+            self.servoAimAngle = self.servoAimAngle + (math.pi * 2 / self.servoNumberOfPosition)
             if (self.servoAimAngle > math.pi) :  self.servoAimAngle =  self.servoAimAngle - (2 * math.pi)
             self.wellPositionned = False
-            
+
         if  not self.wellPositionned  :
-            # go to servoAimAngle :         
+            # go to servoAimAngle :
             selfangle = self.GetMotorAngle(self.Motor)
             Winkel = selfangle - self.servoAimAngle
             self.wellPositionned = self.AimTowards(Winkel)
 
         return AI.SuperAI.Tick(self)
-        
+
     def AimTowards(self, heading):
         THRESHOLD = self.delta
         dreh = 0
 
         if heading > math.pi: heading -= 2 * math.pi
         elif heading < -math.pi: heading += 2 * math.pi
-        
+
         if (heading < -THRESHOLD or heading > THRESHOLD):
-            
+
             dire = -1
             if heading < 0: dire = 1
-            
+
             h = min(abs(heading), 1.75)
             dreh = self.servoNose * dire * (int((h / 1.5) * 100)+20)
-            
+
             # servo must turn :
             dreh = min(max(dreh, -self.servospeed), self.servospeed)
             self.Input('Servo', 0, dreh)
@@ -139,30 +139,30 @@ class ShiftWeapon3(AI.SuperAI):
             # servo has not to turn, return True -> well positionned.
             self.Input('Servo', 0, 0)
             return True
-        
+
     def InvertHandler(self):
         # fire weapon once per second (until we're upright!)
         while 1:
             self.Input("Srimech", 0, 2)
-            
+
             for i in range(0, 8):
                 yield 0
 
-       
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-            
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -177,7 +177,7 @@ class ShiftWeapon3(AI.SuperAI):
             elif id == 9: self.debug.get("line9").setText(string)
             elif id == 10: self.debug.get("line10").setText(string)
 
- 
+
     def ShiftConditionOk(self):
         #test condition to turn servo
         # true : turn servo, may 'restart' different counter for next test

@@ -23,32 +23,32 @@ import Tactics
 
 class FlipperEngage(AI.Tactic):
     name = "FlipperEngage"
-    
+
     def Evaluate(self):
         self.priority = 0
         self.target_id, range = self.ai.GetNearestEnemy()
-        
+
         # TODO: come up with a priority scale for "engaging"
-        
+
         if self.target_id != None:
             self.priority = 80
         else:
             self.priority -= 100
-                
+
     def Execute(self):
         if self.target_id != None:
             self.ai.enemy_id = self.target_id
-            
+
             # default turning & throttle off
             self.ai.Throttle(0)
             self.ai.Turn(0)
-            
+
             target = plus.getLocation(self.target_id)
-            
+
             # slow down if we're coming in too fast
             if self.ai.RobotInRange(self.target_id)[0] and self.ai.GetSpeed() > self.ai.top_speed / 2:
                 self.ai.Throttle(-self.ai.max_throttle)
-                
+
             # try to get within range of chassis...
             if not self.ai.RobotInRange(self.target_id)[1]:
                 if self.ai.CanDriveUpsideDown(self.target_id):
@@ -57,11 +57,11 @@ class FlipperEngage(AI.Tactic):
                     self.ai.Throttle(0)
                     h = self.ai.GetHeadingTo(target, False)
                     self.ai.AimToHeading(h)
-            else:               
+            else:
                 # ... then aim for center of chassis
                 h = self.ai.GetHeadingTo(target, False)
                 self.ai.AimToHeading(h)
-                    
+
             return True
         else:
             return False
@@ -72,14 +72,14 @@ class UpsideDownTracker:
         self.last_position = None
         self.contact = 0
         self.stoptime = 0
-        
+
 class Flipper2(AI.SuperAI):
     "Flipper strategy"
     name = "Flipper2"
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.zone = "flip"
         self.zone2 = "weapon"
         self.trigger = "Flip"
@@ -105,9 +105,9 @@ class Flipper2(AI.SuperAI):
         if 'UseSrimech' in args: self.UseSrimech = args['UseSrimech']
         self.sritime = 8
         if 'SrimechInterval' in args: self.sritime = args.get('SrimechInterval') * 8
-        
+
         self.tactics.append(FlipperEngage(self))
-        
+
     def Activate(self, active):
         if len(self.sweapons) > 0:
             self.maybInvertible = 1
@@ -125,45 +125,45 @@ class Flipper2(AI.SuperAI):
             # self.tauntbox = Gooey.Plain("taunt", 10, 175, 640, 175)
             # tbox = self.tauntbox.addText("taunt1", 10, 0, 640, 15)
             # tbox.setText("")
-            
+
             self.RegisterSmartZone(self.zone, 1)
             self.RegisterSmartZone(self.zone2, 2)
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
         targets = [x.robot for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
         enemy, range = self.GetNearestEnemy()
-        
+
         # Drive inverted if srimech breaks and srimech ID's have been set in sweapons
         if not self.sweapons and self.maybInvertible == 1:
             self.bInvertible = True
-        
+
         # fire srimech if we're stuck on our rear
         if list(plus.getDirection(self.GetID(),0))[1]>0.9:
             self.Input("Srimech", 0, 1)
-                
+
         if self.compinzone == 1 and self.botinzone == 0:
             self.comptimer += 1
-        
+
         if self.botinzone == 1:
             self.comptimer = 0
-                
+
         if self.weapons:
             fire = False
             self.Input(self.trigger, 0, 0)
             if enemy is not None:
                 if self.flip == 1 and self.CanDriveUpsideDown(enemy):
                     fire = True
-                
+
             if fire: self.Input(self.trigger, 0, 1)
-            
+
             if self.PrioritizeFlipper == 0:
                 # secondary weapon
                 if (self.botinzone == 1 or (self.comptimer >= self.NoChassisTime and self.compinzone == 1)):
                     self.Input("Fire", 0, 1)
-                
+
             # spinner
             # spin up depending on enemy's range
             if enemy is not None and range < self.spin_range and not self.IsUpsideDown():
@@ -173,26 +173,26 @@ class Flipper2(AI.SuperAI):
 
             if self.IsUpsideDown():
                 self.Input("Spin", 0, -100)
-                
+
         if self.PrioritizeFlipper == 1:
             # if the flipper is still intact, fire it first before firing other weapons
             if self.weapons:
                 if self.GetInputStatus(self.trigger, 0) == 1 and (self.botinzone == 1 or (self.comptimer >= self.NoChassisTime and self.compinzone == 1)):
                     self.Input("Fire", 0, 1)
-                    
+
             else:
                 if (self.botinzone == 1 or (self.comptimer >= self.NoChassisTime and self.compinzone == 1)):
                     self.Input("Fire", 0, 1)
-            
+
         return AI.SuperAI.Tick(self)
 
     def CanDriveUpsideDown(self, bot):
         MOVE_THRESHOLD = self.move_thresh
-        
+
         if bot in self.upTrack:
             t = self.upTrack[bot]
             # self.tauntbox.get("taunt1").setText(str(t.contact))
-            
+
             # Check if we've made contact with the enemy
             if (self.flip == 1 or self.compinzone == 1) and t.contact == 0:
                 t.contact = 1
@@ -229,7 +229,7 @@ class Flipper2(AI.SuperAI):
             t.stoptime = plus.getTimeElapsed()
             self.upTrack[bot] = t
             return False
-            
+
     def GetNearestEnemy(self):
         closest = None
         min_dist = 9999
@@ -252,7 +252,7 @@ class Flipper2(AI.SuperAI):
                 min_dist = dist
 
         return closest, min_dist
-            
+
     def InvertHandler(self):
         # fire weapon once per second (until we're upright!)
         while 1:
@@ -260,31 +260,31 @@ class Flipper2(AI.SuperAI):
                 self.Input("Srimech", 0, 1)
             else:
                 self.Input(self.trigger, 0, 1)
-            
+
             for i in range(0, self.sritime):
                 yield 0
-                
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "FlipperEngage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-        
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
             elif id == 1: self.debug.get("line1").setText(string)
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
-            
+
     def SmartZoneEvent(self, direction, id, robot, chassis):
         if id == 1:
             if robot > 0:
@@ -292,7 +292,7 @@ class Flipper2(AI.SuperAI):
                     self.flip = 1
                 if direction == -1:
                     self.flip = 0
-                    
+
         if id == 2:
             if robot > 0:
                 if direction == 1:
@@ -305,5 +305,5 @@ class Flipper2(AI.SuperAI):
                         self.botinzone = 0
 
         return True
-    
+
 AI.register(Flipper2)

@@ -43,7 +43,7 @@ class Top_Smasher_2R(AI.SuperAI):
 
         self.zone1 = "Zone1"
         self.triggers1 = ["Fire1"]
-        self.zone2 = "Zone2"     
+        self.zone2 = "Zone2"
         self.triggers2 = ["Fire2"] #  "Number 2 trigger" is actuated/fired via (1) Smartzone ("Zone2" above), or (2) Servo-Aiming (below).
         self.zone3 = "Zone3"
         self.triggers3 = ["Fire3"]
@@ -61,8 +61,8 @@ class Top_Smasher_2R(AI.SuperAI):
         self.Aim_triggers = ["AimFire"] #@@@@@@@@@@@@@@@@@@@@@
 
         self.zone9 = "ZoneFire3-4" # This is  2 Sequential triggers.
-        self.zone10 = "ZoneFire5-8"#  This is 4 Sequential triggers.                               
-        self.zone11 = "ZoneFire1-7"#  This is 7 Sequential triggers.  
+        self.zone10 = "ZoneFire5-8"#  This is 4 Sequential triggers.
+        self.zone11 = "ZoneFire1-7"#  This is 7 Sequential triggers.
 
         if 'zone' in args: self.zone = args['zone']
 
@@ -73,8 +73,8 @@ class Top_Smasher_2R(AI.SuperAI):
         self.weptimerC = 0       ##########################
 
         #######AAAAAAAAAAAAAAAAA
-#        self.ongoingtimerAA = 0 
-#        self.floor = 0  
+#        self.ongoingtimerAA = 0
+#        self.floor = 0
 #        self.altitude = 0 # default (if no Bindings setting)
 #        if 'altitude' in args: self.altitude = args.get('altitude') # for Bindings input #
         #######AAAAAAAAAAAAAAAAA
@@ -120,13 +120,13 @@ class Top_Smasher_2R(AI.SuperAI):
         if 'motor' in args: self.Motor = args['motor'] #@@@@@@@@@@@@@@@@@@@
 
         self.SRM_TImer = 4 # default (if no Bindings setting)
-        if 'SRM_TImer' in args: self.SRM_TImer = args['SRM_TImer'] 
-        
+        if 'SRM_TImer' in args: self.SRM_TImer = args['SRM_TImer']
+
         self.SRMServoTimer = 0
 
         self.TS_range = 0 # default (is basically OFF if no Bindings setting)
         if 'TS_range' in args: self.TS_range = args.get('TS_range')
-            
+
         if 'triggers' in args: self.Aim_triggers = args['triggers'] # Range trigger.
         if 'triggers' in args: self.triggers1 = args['triggers']
         if 'triggers' in args: self.triggers2 = args['triggers']
@@ -139,7 +139,7 @@ class Top_Smasher_2R(AI.SuperAI):
 
 
 
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -164,7 +164,7 @@ class Top_Smasher_2R(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line9", 0, 135, 250, 15)
                 tbox.setText("")                                          #@@@@@@@@@@@@@@@@@@@@@@
-            
+
             self.RegisterSmartZone(self.zone1, 1)
             self.RegisterSmartZone(self.zone2, 2)
             self.RegisterSmartZone(self.zone3, 3)
@@ -208,7 +208,7 @@ class Top_Smasher_2R(AI.SuperAI):
 
 
         ######WWWWWWWWWWW
-        # 3 looping timers for sequential weapon activation (with Bindings input) 
+        # 3 looping timers for sequential weapon activation (with Bindings input)
         self.weptimerA += self.ACounter3thru4
         if self.weptimerA == self.AParameter3thru4:
             self.weptimerA = 0
@@ -223,7 +223,7 @@ class Top_Smasher_2R(AI.SuperAI):
         ######WWWWWWWWWWW
 
         ############--SRM--#############
-        self.OnGoingTimer +=1        
+        self.OnGoingTimer +=1
         if self.OnGoingTimer == 1:  ##############  Get Location "A"
             self.LocX_FactorA = plus.getLocation(self.GetID())[0]
             self.LocZ_FactorA = plus.getLocation(self.GetID())[2]
@@ -233,7 +233,7 @@ class Top_Smasher_2R(AI.SuperAI):
             self.LocZ_FactorB = plus.getLocation(self.GetID())[2]
 
         if self.LocX_FactorA > self.LocX_FactorB - 0.05 and self.LocX_FactorA < self.LocX_FactorB + 0.05 and self.LocZ_FactorA > self.LocZ_FactorB - 0.05 and self.LocZ_FactorA < self.LocZ_FactorB + 0.05:
-            if self.OnGoingTimer == 8:  
+            if self.OnGoingTimer == 8:
                 for trigger in self.Aim_triggers:  self.Input(trigger, 0, 1)
 
         if self.OnGoingTimer == 8:  self.OnGoingTimer = 0  # Keep Looping this sensor.
@@ -242,9 +242,9 @@ class Top_Smasher_2R(AI.SuperAI):
 
         ##########AAAAAAAAAAAAAAAAA
 #        if self.altitude > 0: # If there's an 'altitude' entry in Bindings...
-#            self.ongoingtimerAA += 1   
+#            self.ongoingtimerAA += 1
 #
-#            if self.ongoingtimerAA <2:  
+#            if self.ongoingtimerAA <2:
 #                self.floor = self.GetLocation()[1]
 #
 #            if self.GetLocation()[1] < self.floor + self.altitude: # "self.altitude" added for Bindings input #
@@ -253,26 +253,26 @@ class Top_Smasher_2R(AI.SuperAI):
 
 
         return AI.SuperAI.Tick(self)
-        
+
     #@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    def Aim(self, level):        
+    def Aim(self, level):
         level = min(max(level, -100), 100)
         self.Input('Aim', 0, level)
         self.DebugString(9, "Aim = " + str(int(level)))
-        
+
     def AimTowards(self, heading, in_reverse = False):
         #THRESHOLD = .05
         THRESHOLD = .2
         dreh = 0
-        
+
         if heading > math.pi: heading -= 2 * math.pi
         elif heading < -math.pi: heading += 2 * math.pi
-        
+
         if (heading < -THRESHOLD or heading > THRESHOLD):
-            
+
             dire = -1
             if heading < 0: dire = 1
-            
+
             h = min(abs(heading), 1.75)
             dreh = dire * (int((h / 1.5) * 100)+20)
 
@@ -297,51 +297,51 @@ class Top_Smasher_2R(AI.SuperAI):
             for trigger in self.triggers6: self.Input(trigger, 0, 6)
             for trigger in self.triggers7: self.Input(trigger, 0, 7)
             for trigger in self.triggers8: self.Input(trigger, 0, 8)
-            
+
             for i in range(0, self.SRM_TImer):
                 yield 0
 
             if self.Motor < 1000:  # If there's a Bindings entry to control a servo motor...
                 self.SRMServoTimer += 1
-                if self.SRMServoTimer >= 10 and self.SRMServoTimer < 20:      
+                if self.SRMServoTimer >= 10 and self.SRMServoTimer < 20:
                     self.Input('Aim', 0, -100)
-                if self.SRMServoTimer >= 20 and self.SRMServoTimer < 30:      
+                if self.SRMServoTimer >= 20 and self.SRMServoTimer < 30:
                     self.Input('Aim', 0, 100)
-                if self.SRMServoTimer == 30:      
+                if self.SRMServoTimer == 30:
                     self.Input('Aim', 0, 0)
                     self.SRMServoTimer = 0
 
 
-            
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
 
 
-            
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
             elif id == 1: self.debug.get("line1").setText(string)
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
-            elif id == 4: self.debug.get("line4").setText(string) 
+            elif id == 4: self.debug.get("line4").setText(string)
             elif id == 5: self.debug.get("line5").setText(string)
             elif id == 6: self.debug.get("line6").setText(string)
             elif id == 7: self.debug.get("line7").setText(string)
             elif id == 8: self.debug.get("line8").setText(string)
             elif id == 9: self.debug.get("line9").setText(string) #@@@@@@@@@@@@@@@@
-    
+
 
 
     def SmartZoneEvent(self, direction, id, robot, chassis):
@@ -377,11 +377,11 @@ class Top_Smasher_2R(AI.SuperAI):
             if robot > 0:
                 if direction == 1:
                     for trigger in self.triggers8: self.Input(trigger, 0, 8)
-                   
+
         ########WWWWWWWWWWWWW --SEQUENTIAL FIRING --
-        # Fires multiple triggers(3-4). 
-#        elif id == 9 and self.weapons and self.weptimerA == self.ACounter3thru4:  
-        elif id == 9 and self.weapons and self.weptimerA == 0:  
+        # Fires multiple triggers(3-4).
+#        elif id == 9 and self.weapons and self.weptimerA == self.ACounter3thru4:
+        elif id == 9 and self.weapons and self.weptimerA == 0:
             if robot > 0:
                 if direction == 1:
                     for trigger in self.triggers3: self.Input(trigger, 0, 3)
@@ -391,7 +391,7 @@ class Top_Smasher_2R(AI.SuperAI):
                    for trigger in self.triggers4: self.Input(trigger, 0, 4)
 
 
-        # Fires multiple triggers(5-8). 
+        # Fires multiple triggers(5-8).
 #        elif id == 10 and self.weapons and self.weptimerB == self.BCounter5thru8:
         elif id == 10 and self.weapons and self.weptimerB == 0:
             if robot > 0:
@@ -411,7 +411,7 @@ class Top_Smasher_2R(AI.SuperAI):
                     for trigger in self.triggers8: self.Input(trigger, 0, 8)
 
 
-        # Fires multiple triggers(1-7). 
+        # Fires multiple triggers(1-7).
 #        elif id == 10 and self.weapons and self.weptimerC == self.CCounter1thru7:
         elif id == 11 and self.weapons and self.weptimerC == 0:
             if robot > 0:

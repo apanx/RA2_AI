@@ -14,7 +14,7 @@ class Snow(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-        
+
         self.snowcount = 0
         self.randcheck = 0
         self.worn = 0
@@ -24,7 +24,7 @@ class Snow(AI.SuperAI):
         self.newopponent=0
 
         self.tactics.append(Tactics.Engage(self))
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -37,7 +37,7 @@ class Snow(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
             self.RegisterSmartZone("weapon", 1)
             self.RegisterSmartZone("under", 2)
             self.bids = list(plus.getPlayers())
@@ -53,7 +53,7 @@ class Snow(AI.SuperAI):
                 self.memory[1]=0
                 self.memory[2]=self.complist
                 file("adaptiveAI.txt", "w").write(str(self.memory))
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -68,13 +68,13 @@ class Snow(AI.SuperAI):
 
         if self.weapons and self.botinzone == 1:
             self.Input("Fire", 0, 1)
-            
+
         #if poo:
             #a= str([blah])
             #output1 = file("adaptiveAI.txt", "w")
             #output1.write(a)
             #output1.close
-            
+
         #decide how to shift wedges- wide or narrow
         if self.randcheck == 0:
             if self.memory[0]==0:
@@ -99,7 +99,7 @@ class Snow(AI.SuperAI):
             if self.worn>=13:
                 self.Input("Shift", 1, 100)
                 self.snowcount += 1
-                
+
         return AI.SuperAI.Tick(self)
 
     def InvertHandler(self):
@@ -108,21 +108,21 @@ class Snow(AI.SuperAI):
             self.Input("Srimech", 0, 1)
             for i in range(0, 8):
                 yield 0
-            
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-                
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -145,5 +145,5 @@ class Snow(AI.SuperAI):
                     self.randcheck=0
                     self.undered=1
         return True
-    
+
 AI.register(Snow)

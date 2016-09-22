@@ -12,13 +12,13 @@ class HorzSpinner(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-        
+
         self.spin_range = 30.0
         self.zone = "weapon"
-	self.triggers = ["Fire"]
-	self.reloadTime = 0
-	self.reloadDelay = 2
-	              
+        self.triggers = ["Fire"]
+        self.reloadTime = 0
+        self.reloadDelay = 2
+
         self.triggerIterator = iter(self.triggers)
         if 'range' in args:
             self.spin_range = args.get('range')
@@ -39,11 +39,11 @@ class HorzSpinner(AI.SuperAI):
                 tbox = self.debug.addText("line3", 0, 45, 200, 15)
                 tbox.setText("")
                 tbox = self.debug.addText("line4", 0, 60, 200, 15)
-                tbox.setText("")       
+                tbox.setText("")
                 tbox = self.debug.addText("line5", 0, 75, 200, 15)
-                tbox.setText("")  
+                tbox.setText("")
                 tbox = self.debug.addText("line6", 0, 90, 200, 15)
-                tbox.setText("")  
+                tbox.setText("")
                 self.RegisterSmartZone(self.zone, 1)
         return AI.SuperAI.Activate(self, active)
 
@@ -51,41 +51,41 @@ class HorzSpinner(AI.SuperAI):
         if self.weapons:
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
-            
+
             if enemy is not None and range < self.spin_range and not self.IsUpsideDown():
                 self.Input("Spin", 0, 1)
-                self.DebugString(6, "Spinning") 
+                self.DebugString(6, "Spinning")
             elif self.GetInputStatus("Spin", 0) != 0:
                 self.Input("Spin", 0, 0)
-	        self.DebugString(6, "Stopped")
-	        
+                self.DebugString(6, "Stopped")
+
             targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-            
+
             # slight delay between firing
             if self.reloadTime > 0: self.reloadTime -= 1
-            
+
             if len(targets) > 0 and self.reloadTime <= 0:
                 try:
                     trigger = self.triggerIterator.next()
                 except StopIteration:
                     self.triggerIterator = iter(self.triggers)
                     trigger = self.triggerIterator.next()
-                
+
                 self.Input(trigger, 0, 1)
                 self.reloadTime = self.reloadDelay
-            
+
         return AI.SuperAI.Tick(self)
-        
+
     def InvertHandler(self):
         # Wait 10 seconds for disc to stop spining then fire SRM once per three seconds (until we're upright!)
-        self.DebugString(6, "Waiting")         
+        self.DebugString(6, "Waiting")
         for i in range(0, 80):
                 yield 0
         while 1:
             self.Input("SRM", 0, 1)
-            self.DebugString(6, "SRM") 
-            
+            self.DebugString(6, "SRM")
+
             for i in range(0, 24):
                 yield 0
 
@@ -97,9 +97,9 @@ class HorzSpinner(AI.SuperAI):
             damage = self.GetLastDamageReceived()
             if damage[3] == robot_id and (plus.getTimeElapsed() - damage[2] < 1.0):
                 return (True, True)
-                
+
         return (False, False)
-        
+
     def LostComponent(self, id):
         #print "Lost Component!"
         return AI.SuperAI.LostComponent(self, id)
@@ -107,15 +107,15 @@ class HorzSpinner(AI.SuperAI):
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
 
     def DebugString(self, id, string):
