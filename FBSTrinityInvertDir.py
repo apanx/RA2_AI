@@ -10,29 +10,34 @@ import Tactics
 class FBSTrinityInvertDir(AI.SuperAI):
     "Spins!"
     name = "FBSTrinityInvertDir"
-	#Like FBS, but does not change the direction when inverted.
-	#Also supports pistons for Trinity effect.
-	#For Melty Brain type SnS that are more efficient when spinning in a certain direction.
-	#Brought to you by Naryar and ripped off Apanx's FBS.py
+    #Like FBS, but does not change the direction when inverted.
+    #Also supports pistons for Trinity effect.
+    #For Melty Brain type SnS that are more efficient when spinning in a certain direction.
+    #Brought to you by Naryar and ripped off Apanx's FBS.py
+
+
+
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
         self.tactics.append(Tactics.Engage(self))
-        
+
         self.spinspeed = 6.0 #Turningspeed to achieve before moving
         self.accuracy = 0.01 #Radians
         self.rampupfactor = (math.pi / 2 - self.accuracy) * (math.pi / 2 - (math.pi - self.accuracy) ) * -1
         self.direction = 1 # 1 or -1
-		self.trinityrange = 40
-        
+        self.trinityrange = 40
+
         if 'direction' in args: self.direction = args.get('direction')
         if 'spinspeed' in args: self.spinspeed = args.get('spinspeed')
         if 'accuracy' in args: self.accuracy = args.get('accuracy')
-        
+
     def Activate(self, active):
+
+
         plus.AI.__setattr__tickInterval__(self, 0.001)
         print self.rampupfactor
-        
+
         if active:
             if AI.SuperAI.debugging:
                 self.debug = Gooey.Plain("watch", 430, 75, 250, 165)
@@ -60,37 +65,37 @@ class FBSTrinityInvertDir(AI.SuperAI):
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
-	if AI.SuperAI.debugging:
-        	speed = self.GetSpeed()
-        	self.DebugString(4, "Speed = " + str(speed))
+        if AI.SuperAI.debugging:
+            speed = self.GetSpeed()
+            self.DebugString(4, "Speed = " + str(speed))
 
-        	turning_speed = self.GetTurning()
-        	self.DebugString(5, "TSpeed = " + str(turning_speed))
-			# fire weapon
+            turning_speed = self.GetTurning()
+            self.DebugString(5, "TSpeed = " + str(turning_speed))
+            # fire weapon
         if self.weapons:
             targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-            
+
             # slight delay between firing
             if self.reloadTime > 0: self.reloadTime -= 1
-            
+
             if len(targets) > 0 and self.reloadTime <= 0:
                 try:
                     trigger = self.triggerIterator.next()
                 except StopIteration:
                     self.triggerIterator = iter(self.triggers)
                     trigger = self.triggerIterator.next()
-                
+
                 self.Input(trigger, 0, 1)
                 self.reloadTime = self.reloadDelay
-        
+
         return AI.SuperAI.Tick(self)
 
-        
+
     def LostComponent(self, id):
         #print "Lost Component!"
         return AI.SuperAI.LostComponent(self, id)
-        
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -103,7 +108,7 @@ class FBSTrinityInvertDir(AI.SuperAI):
             elif id == 7: self.debug.get("line7").setText(string)
             elif id == 8: self.debug.get("line8").setText(string)
             elif id == 9: self.debug.get("line9").setText(string)
-            
+
     def StuckHandler(self):
         "This default generator is called when the bot is almost immobile."
         while 1:
@@ -119,72 +124,72 @@ class FBSTrinityInvertDir(AI.SuperAI):
                 dir = vector3(self.GetDirection())
                 self.NormalDriveToLocation((pos + dir * 3).asTuple(), True)
                 yield 0
-                
+
     def InvertHandler(self):
         # fire SRM once per two seconds (until we're upright!)
         while 1:
             self.Input("SRM", 0, 1)
-            
+
             for i in range(0, 2000):
                 yield 0
-                
+
     def Think(self):
         self.Evaluate()
         self.countdownToEvaluation = 250
-        
-        
+
+
     def DriveToWaypoints(self, waypoints, in_reverse = False):
         throttle = 0
         found = False
-        
+
         while len(waypoints) > 0 and not found:
             grid = waypoints[0]
             pos = Arenas.currentArena.FromGrid(grid)
             dist = self.GetDistanceTo(pos)
-            
+
             if dist < 1:
                 waypoints.pop(0)
-                
+
             else:
                 # drive to this point
-                
+
                 h = self.GetHeadingTo(pos, in_reverse)
-                  
+
                 self.DebugString(6, str(self.GetHeading(False)))
                 self.DebugString(7, str(h))
-                
+
                 h -= math.pi / 8 * self.direction
-        	if h > math.pi: h -= 2 * math.pi
+                if h > math.pi: h -= 2 * math.pi
                 elif h < -math.pi: h += 2 * math.pi
-        	h = abs(h)
-        	
-                if abs(self.GetTurning()) > self.spinspeed:               
-                
-                	turnFactor = ((h - self.accuracy) * (h - (math.pi - self.accuracy) ) / self.rampupfactor)
-                 
-                	if (h>1.57): 
-                 		TurnInput = int(max(100 * turnFactor, 0) * self.direction)
-                 		ThrottleInput = int((100 + TurnInput) * -1)
-                 	
-                 		self.Turn(TurnInput)
-                 		self.Throttle(ThrottleInput)
-                 	if (h<1.57): 
-                 		TurnInput = int(max(100 * turnFactor, 0) * self.direction)
-                 		ThrottleInput = int((100 + TurnInput))
-                 	
-                 		self.Turn(TurnInput)
-                 		self.Throttle(ThrottleInput)
-                 
+                h = abs(h)
+
+                if abs(self.GetTurning()) > self.spinspeed:
+
+                    turnFactor = ((h - self.accuracy) * (h - (math.pi - self.accuracy) ) / self.rampupfactor)
+
+                    if (h>1.57):
+                        TurnInput = int(max(100 * turnFactor, 0) * self.direction)
+                        ThrottleInput = int((100 + TurnInput) * -1)
+
+                        self.Turn(TurnInput)
+                        self.Throttle(ThrottleInput)
+                    if (h<1.57):
+                        TurnInput = int(max(100 * turnFactor, 0) * self.direction)
+                        ThrottleInput = int((100 + TurnInput))
+
+                        self.Turn(TurnInput)
+                        self.Throttle(ThrottleInput)
+
 
                 else:
-                	self.Turn(100 * self.direction)
-       		found = True
+                    self.Turn(100 * self.direction)
+                found = True
         if len(waypoints) == 0:
             self.Turn(100 * self.direction)
             self.Throttle(0)
-            
+
         return found
-        
+
     def NormalDriveToLocation(self, world_location, in_reverse = False, update_path = True, last_path = []):
         if self.GetDistanceTo(world_location) > 1:
             if update_path:
@@ -193,7 +198,7 @@ class FBSTrinityInvertDir(AI.SuperAI):
                 waypoints = list(a.GetPath(self.GetLocation(), world_location, False))
             else:
                 waypoints = last_path
-            
+
             if len(waypoints) > 0:
                 return self.NormalDriveToWaypoints(waypoints, in_reverse)
             else:
@@ -202,19 +207,19 @@ class FBSTrinityInvertDir(AI.SuperAI):
             self.Throttle(0)
             self.Turn(0)
             return False
-            
+
     def NormalDriveToWaypoints(self, waypoints, in_reverse = False):
         throttle = 0
         found = False
-        
+
         while len(waypoints) > 0 and not found:
             grid = waypoints[0]
             pos = Arenas.currentArena.FromGrid(grid)
             dist = self.GetDistanceTo(pos)
             dir = 1
-            
+
             if in_reverse: dir = -1
-            
+
             if dist < 1:
                 waypoints.pop(0)
             else:
@@ -241,19 +246,19 @@ class FBSTrinityInvertDir(AI.SuperAI):
                     else:
                         throttle = 0
                         self.boost_throttle = self.max_throttle
-                        
+
                 found = True
-        
+
         self.Throttle(throttle)
-        
+
         if len(waypoints) == 0:
             self.Turn(0)
             self.Throttle(0)
-            
+
         return found
-        
+
 # WIP, convert this into array for support of more wheel sides
-        
+
     def Throttle(self, throttle):
         # if we're car steering and we're not moving much, throttle up
         if self.bCarSteering and self.last_turn_throttle != 0:
@@ -268,12 +273,15 @@ class FBSTrinityInvertDir(AI.SuperAI):
         self.set_throttle = throttle
         self.Input('Forward', 0, throttle)
         self.DebugString(0, "Throttle = " + str(int(throttle)))
-        
+
     def Turn(self, turning):
         turning = min(max(turning, -100), 100)
+
+
+
         self.set_turn_throttle = turning
         self.Input('LeftRight', 0, -turning)
         self.Input('LeftRight', 1, turning)
         self.DebugString(1, "Turning = " + str(int(turning)))
-            
+
 AI.register(FBSTrinityInvertDir)

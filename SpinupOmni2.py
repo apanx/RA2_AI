@@ -23,7 +23,7 @@ class SpinupOmni2(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.zone = "weapon"
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
@@ -48,10 +48,10 @@ class SpinupOmni2(AI.SuperAI):
         self.jamTimer = 0
         self.raspberry = 1.5
         self.stopFunction = self.Stop
-        
+
         if 'range' in args:
             self.spin_range = args.get('range')
-      
+
         if 'triggers' in args: self.triggers = args['triggers']
         if 'reload' in args: self.reloadDelay = args['reload']
         if 'ticks' in args: self.tickFactor = args['ticks']
@@ -60,11 +60,11 @@ class SpinupOmni2(AI.SuperAI):
         if 'DisplayRPM' in args: self.display = args['DisplayRPM']
         if 'TargetRPM' in args: self.targetRPM = args['TargetRPM']
         if 'JamTime' in args: self.raspberry = args['JamTime']
-        
+
         self.triggerIterator = iter(self.triggers)
- 
+
         self.tactics.append(Tactics.Engage(self))
-        
+
     def Activate(self, active):
         plus.AI.__setattr__tickInterval__(self, 0.125/self.tickFactor)
         if active:
@@ -88,12 +88,12 @@ class SpinupOmni2(AI.SuperAI):
                 tbox3.setText("")
                 tbox4 = self.tauntbox.addText("taunt4", 10, 60, 640, 15)
                 tbox4.setText("")
-            
+
             self.RegisterSmartZone(self.zone, 1)
         else:
             # get rid of reference to self
             self.stopFunction = None
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -105,12 +105,12 @@ class SpinupOmni2(AI.SuperAI):
                 self.tauntbox.get("taunt2").setText("No motor 2.")
             self.tauntbox.get("taunt3").setText("Average RPM: "+str(self.avg_RPM))
             self.tauntbox.get("taunt4").setText("Maximum RPM: "+str(self.max_RPM))
-            
+
         #Measure RPM
         if (self.GetMotorAngle(self.motorID) > math.pi/3 or self.GetMotorAngle(self.motorID) < 0) and self.measuring == 0:
             self.revolution = plus.getTimeElapsed()
             self.measuring = 1
-            
+
         if 0 < self.GetMotorAngle(self.motorID) < math.pi/3 and self.measuring == 1:
             self.RPM = 50/(plus.getTimeElapsed() - self.revolution)
             if self.display != 0:
@@ -118,13 +118,13 @@ class SpinupOmni2(AI.SuperAI):
                 if self.RPM > self.max_RPM:
                     self.max_RPM = self.RPM
             self.measuring = 0
-            
+
         if self.motorID2 > 0:
             #Measure RPM of second motor
             if (self.GetMotorAngle(self.motorID2) > math.pi/3 or self.GetMotorAngle(self.motorID2) < 0) and self.measuring2 == 0:
                 self.revolution2 = plus.getTimeElapsed()
                 self.measuring2 = 1
-                
+
             if 0 < self.GetMotorAngle(self.motorID2) < math.pi/3 and self.measuring2 == 1:
                 self.RPM2 = 50/(plus.getTimeElapsed() - self.revolution2)
                 if self.display != 0:
@@ -132,15 +132,15 @@ class SpinupOmni2(AI.SuperAI):
                     if self.RPM2 > self.max_RPM:
                         self.max_RPM = self.RPM2
                 self.measuring2 = 0
-            
+
         if len(self.RPMhist) > 0:
             self.avg_RPM = reduce(operator.add, self.RPMhist)/len(self.RPMhist)
-        
+
         # fire weapon
 
         # spin up depending on enemy's range
         enemy, range = self.GetNearestEnemy()
-        
+
         if enemy is not None and range < self.spin_range:
             if self.spin_reverse == 0:
                 self.Input("Spin", 0, 100)
@@ -148,51 +148,51 @@ class SpinupOmni2(AI.SuperAI):
                 self.Input("Spin", 0, -100)
         elif self.GetInputStatus("Spin", 0) != 0:
             self.Input("Spin", 0, 0)
-            
+
         # Optional turning control to aid in self righting
         if self.IsUpsideDown() and not self.bInvertible:
             self.Input("Sridrive", 0, 100)
         else:
             self.Input("Sridrive", 0, 0)
-            
+
         # Try reversing weapons if they get jammed
         if plus.getTimeElapsed() - self.revolution > self.raspberry or (self.motorID2 > 0 and plus.getTimeElapsed() - self.revolution2 > self.raspberry):
             self.jamTimer += 1
         else:
             self.jamTimer = 0
-            
+
         if self.jamTimer >= 24*self.tickFactor and self.spin_reverse == 0:
             self.spin_reverse = 1
             self.jamTimer = 0
-            
+
         if self.jamTimer >= 24*self.tickFactor and self.spin_reverse == 1:
             self.spin_reverse = 0
             self.jamTimer = 0
-        
+
         targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
             and not plus.isDefeated(x.robot)]
-        
+
         if self.weapons:
             # slight delay between firing
             if self.reloadTime > 0: self.reloadTime -= 1
-            
+
             if len(targets) > 0 and self.reloadTime <= 0:
                 try:
                     trigger = self.triggerIterator.next()
                 except StopIteration:
                     self.triggerIterator = iter(self.triggers)
                     trigger = self.triggerIterator.next()
-                
+
                 self.Input(trigger, 0, 1)
                 self.reloadTime = self.reloadDelay
-        
+
         bReturn = AI.SuperAI.Tick(self)
-            
+
         # call this now so it takes place after other driving commands
         if self.stopFunction: self.stopFunction(len(targets) > 0)
-        
+
         return bReturn
-        
+
     def Stop(self, bTarget):
         # stay put if weapon isn't spinning fast
         if self.weapons and not self.bImmobile and (self.RPM < self.targetRPM or (self.motorID2 > 0 and self.RPM2 < self.targetRPM)):
@@ -216,42 +216,42 @@ class SpinupOmni2(AI.SuperAI):
                 dir = vector3(self.GetDirection())
                 self.DriveToLocation((pos + dir * 3).asTuple())
                 yield 0
-                
+
     def Think(self):
         self.Evaluate()
         self.countdownToEvaluation = 8*self.tickFactor
         # shut down motors while we think
         self.Throttle(0)
         self.Turn(0)
-        
+
     def InvertHandler(self):
         # fire all weapons once per second (until we're upright!)
         while 1:
             for trigger in self.trigger2:
                 self.Input(trigger, 0, 1)
-            
+
             for i in range(0, 8*self.tickFactor):
                 yield 0
-                
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-                
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
             elif id == 1: self.debug.get("line1").setText(string)
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
-    
+
 AI.register(SpinupOmni2)

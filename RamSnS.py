@@ -13,9 +13,9 @@ class RamSnS(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-        
+
         self.spin_range = 3.0
-        self.InitialRamTimer = 0        
+        self.InitialRamTimer = 0
 
         if 'range' in args: self.spin_range = args.get('range')
 
@@ -34,17 +34,17 @@ class RamSnS(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
 #        if self.weapons:
-        self.InitialRamTimer += 1        
+        self.InitialRamTimer += 1
         if self.InitialRamTimer >= 20:
             self.Input("Forward", 0, 0)
             self.Input("LeftRight", 0, 0)
             self.Input("Spin", 0, 100)
-            
+
         return AI.SuperAI.Tick(self)
 
 
@@ -55,7 +55,7 @@ class RamSnS(AI.SuperAI):
         elif id in self.immobile_list:
             self.Input("Spin", 0, 0)
             del self.immobile_list[id]
-            
+
         if id == self.GetID():
             # keep track of our own immobility warning
             self.Input("Spin", 0, 0)
@@ -81,8 +81,8 @@ class RamSnS(AI.SuperAI):
                 dir = vector3(self.GetDirection())
                 self.DriveToLocation((pos + dir * 3).asTuple())
                 yield 0
-            self.InitialRamTimer = 1        
-        
+            self.InitialRamTimer = 1
+
     def LostComponent(self, id):
         #print "Lost Component!"
         return AI.SuperAI.LostComponent(self, id)

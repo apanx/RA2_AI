@@ -15,7 +15,7 @@ class SpinnerOmni(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.zone = "weapon"
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
@@ -67,17 +67,17 @@ class SpinnerOmni(AI.SuperAI):
             self.spinner3.Lock(False)
             self.spinner3.SetPowerSettings(1.11,150000)
             self.spinner3.SetDirection(-100)
-        
+
         if 'range' in args:
             self.spin_range = args.get('range')
-      
+
         if 'triggers' in args: self.triggers = args['triggers']
         if 'reload' in args: self.reloadDelay = args['reload']
-        
+
         self.triggerIterator = iter(self.triggers)
- 
+
         self.tactics.append(Tactics.Engage(self))
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -93,9 +93,9 @@ class SpinnerOmni(AI.SuperAI):
             self.tauntbox = Gooey.Plain("taunt", 10, 175, 640, 175)
             tbox = self.tauntbox.addText("taunt1", 10, 0, 640, 15)
             tbox.setText("")
-            
+
             self.RegisterSmartZone(self.zone, 1)
-            
+
             if self.exactingRevenge == 1:
                 self.bids = list(plus.getPlayers())
                 self.bids.remove(self.GetID())
@@ -113,7 +113,7 @@ class SpinnerOmni(AI.SuperAI):
                 self.yCenter = self.GetLocation()[1] + 6
                 plus.playSound(self.psygrab)
                 plus.loopSound(self.music)
-                
+
                 #torches for Epic Showdown arena
                 plus.AddParticleEmitter((-10.25, 4, 0), (0, 3, 0), (2, 5, 2)).SetEmitting(True)
                 plus.AddParticleEmitter((-5.125, 4, -8.88), (0, 3, 0), (2, 5, 2)).SetEmitting(True)
@@ -124,7 +124,7 @@ class SpinnerOmni(AI.SuperAI):
         else:
             # get rid of reference to self
             self.secretFunction = None
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -132,39 +132,39 @@ class SpinnerOmni(AI.SuperAI):
         if self.GetHealth(0) < 0.5 and self.newnumLosses == self.numLosses:
             self.newnumLosses = self.numLosses + 1
             file("adaptiveAI_2.txt", "w").write(str(self.newnumLosses))
-            
+
         # fire weapon
         if self.weapons:
 
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
-            
+
             if enemy is not None and range < self.spin_range:
                 self.Input("Spin", 0, 1)
             elif self.GetInputStatus("Spin", 0) != 0:
                 self.Input("Spin", 0, 0)
-            
+
             targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-            
+
             # slight delay between firing
             if self.reloadTime > 0: self.reloadTime -= 1
-            
+
             if len(targets) > 0 and self.reloadTime <= 0:
                 try:
                     trigger = self.triggerIterator.next()
                 except StopIteration:
                     self.triggerIterator = iter(self.triggers)
                     trigger = self.triggerIterator.next()
-                
+
                 self.Input(trigger, 0, 1)
                 self.reloadTime = self.reloadDelay
-            
+
         bReturn = AI.SuperAI.Tick(self)
-            
+
         # call this now so it takes place after other driving commands
         if self.secretFunction: self.secretFunction(len(targets) > 0)
-        
+
         return bReturn
 
     def Secret(self, bTarget):
@@ -199,7 +199,7 @@ class SpinnerOmni(AI.SuperAI):
         #stay put unless we're being counted out
         if not self.bImmobile:
             self.Throttle(0)
-            
+
         for bot in self.bids:
             #cool psychic lightning effects
             self.arena.SetLightningStartEnd(bot, self.GetLocation(), plus.getLocation(bot))
@@ -283,7 +283,7 @@ class SpinnerOmni(AI.SuperAI):
                 self.smoker -= 0.5
             self.smoketimer += 0.1
             self.smokeh = (self.yCenter - 6) + (6 * ((1 / self.smoker) ** 2))
-            
+
             #SMOKE TORNADO
             plus.emitSmoke(30, ((self.smoker * (math.cos((math.pi/4) + self.smoketimer))), self.smokeh, (self.smoker * (math.sin((math.pi/4) + self.smoketimer)))), (0, 0, 0), (5, 8, 5))
             plus.emitSmoke(30, ((self.smoker * (math.cos((math.pi/2) + self.smoketimer))), self.smokeh, (self.smoker * (math.sin((math.pi/2) + self.smoketimer)))), (0, 0, 0), (5, 8, 5))
@@ -293,7 +293,7 @@ class SpinnerOmni(AI.SuperAI):
             plus.emitSmoke(30, ((self.smoker * (math.cos((3*math.pi/2) + self.smoketimer))), self.smokeh, (self.smoker * (math.sin((3*math.pi/2) + self.smoketimer)))), (0, 0, 0), (5, 8, 5))
             plus.emitSmoke(30, ((self.smoker * (math.cos((7*math.pi/4) + self.smoketimer))), self.smokeh, (self.smoker * (math.sin((7*math.pi/4) + self.smoketimer)))), (0, 0, 0), (5, 8, 5))
             plus.emitSmoke(30, ((self.smoker * (math.cos((2*math.pi) + self.smoketimer))), self.smokeh, (self.smoker * (math.sin((2*math.pi) + self.smoketimer)))), (0, 0, 0), (5, 8, 5))
-            
+
             if self.smoker == 24:
                 self.tauntbox.get("taunt1").setText("That is the sound of your death approaching.")
             if self.smoker == 16:
@@ -324,28 +324,28 @@ class SpinnerOmni(AI.SuperAI):
         while 1:
             for trigger in self.trigger2:
                 self.Input(trigger, 0, 1)
-            
+
             for i in range(0, 8):
                 yield 0
-                
+
     def __del__(self):
         plus.stopAllSounds()
         #Arenas.SuperArena.__del__(self)
-         
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-                
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -354,5 +354,5 @@ class SpinnerOmni(AI.SuperAI):
             elif id == 3: self.debug.get("line3").setText(string)
             elif id == 4: self.debug.get("line4").setText(string)
             #elif id == 5: self.debug.get("line5").setText(string)
-    
+
 AI.register(SpinnerOmni)

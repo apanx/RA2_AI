@@ -13,7 +13,7 @@ class BountyHunter(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.zone1 = "weapon"
         self.triggers1 = ["Fire"]
         self.triggers2 = ["Srimech"]
@@ -25,13 +25,13 @@ class BountyHunter(AI.SuperAI):
         self.NoChassisTime = 8
 
         if 'zone' in args: self.zone = args['zone']
-        
+
         if 'triggers' in args: self.triggers1 = args['triggers']
         if 'triggers' in args: self.triggers2 = args['triggers']
         if 'NoChassisTime' in args: self.NoChassisTime = args.get('NoChassisTime') * 4
 
         self.tactics.append(Tactics.Engage(self))
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -44,9 +44,9 @@ class BountyHunter(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
             self.RegisterSmartZone(self.zone1, 1)
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -74,19 +74,19 @@ class BountyHunter(AI.SuperAI):
 
         targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-        
+
         # if a component is in the smart zone but not the chassis, wait to find chassis before firing weapons
         if self.compinzone == 1 and self.botinzone == 0:
             self.comptimer += 1
-            
+
         if self.botinzone == 1:
             self.comptimer = 0
-            
+
         if self.weapons and (self.botinzone == 1 or (self.comptimer >= self.NoChassisTime and self.compinzone == 1)):
             for trigger in self.triggers1: self.Input(trigger, 0, 1)
-                       
+
         bReturn = AI.SuperAI.Tick(self)
-        
+
         return bReturn
 
     def InvertHandler(self):
@@ -94,24 +94,24 @@ class BountyHunter(AI.SuperAI):
         while 1:
             for trigger in self.triggers2:
                 self.Input(trigger, 0, 1)
-            
+
             for i in range(0, 8):
                 yield 0
-                
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-                
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -131,5 +131,5 @@ class BountyHunter(AI.SuperAI):
                     if chassis:
                         self.botinzone = 0
         return True
-    
+
 AI.register(BountyHunter)

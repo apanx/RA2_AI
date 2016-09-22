@@ -37,12 +37,12 @@ class SpinServo(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.zone = "weapon"
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
         self.reloadTime = 0
-        self.reloadDelay = 3     
+        self.reloadDelay = 3
         self.spin_range = 3.0
         # declare  zone and variables associated with the servo motor :
         self.zone2 = "zoneservo1"
@@ -56,7 +56,7 @@ class SpinServo(AI.SuperAI):
         # servoVS = -1 indicates that the servo spin vertically : do  not authorized positive servo motor angle
         # servoVS = 0 : no restriction to servo angle motor. Default value.
         self.servoVS = 0
-		#read theses values from bindings.py :
+        #read theses values from bindings.py :
         if 'minangle' in args: self.minangle=args['minangle']
         if 'maxangle' in args: self.maxangle=args['maxangle']
         if self.minangle > self.maxangle:
@@ -69,15 +69,15 @@ class SpinServo(AI.SuperAI):
         if 'delta' in args: self.delta=args['delta']
         if 'range' in args:
             self.spin_range = args.get('range')
-      
+
         if 'triggers' in args: self.triggers = args['triggers']
         if 'reload' in args: self.reloadDelay = args['reload']
         # to display the current angle of the servo motor uncomment thoses lines :
         self.debug = True
         AI.SuperAI.debugging = True
         self.tactics.append(Tactics.Engage(self))
-  
-	
+
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -104,11 +104,11 @@ class SpinServo(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line10", 0, 150, 250, 15)
                 tbox.setText("")
-            # standard smart zone : 
+            # standard smart zone :
             self.RegisterSmartZone(self.zone, 1)
             self.RegisterSmartZone(self.zone2,2)
             self.RegisterSmartZone(self.zone3,3)
-			#define identifier of servo-motor
+            #define identifier of servo-motor
             goon = 1
             i = 0
             while goon == 1:
@@ -116,7 +116,7 @@ class SpinServo(AI.SuperAI):
                 currentType =  self.GetComponentType(i)
                 if currentType == "ServoMotor": self.motor = i
                 i = i+ 1
-	return AI.SuperAI.Activate(self, active)
+        return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
         # fire weapon
@@ -126,32 +126,32 @@ class SpinServo(AI.SuperAI):
             self.DebugString(10, "Current servo motor angle : " + str(servoangle))
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
-            
+
             if enemy is not None and range < self.spin_range:
                 self.Input("Spin", 0, 1)
             elif self.GetInputStatus("Spin", 0) != 0:
                 self.Input("Spin", 0, 0)
-            
+
             targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-            
+
             # slight delay between firing
             if self.reloadTime > 0: self.reloadTime -= 1
-            
+
             if len(targets) > 0 and self.reloadTime <= 0:
                 try:
                     trigger = self.triggerIterator.next()
                 except StopIteration:
                     self.triggerIterator = iter(self.triggers)
                     trigger = self.triggerIterator.next()
-                
+
                 self.Input(trigger, 0, 1)
                 self.reloadTime = self.reloadDelay
 
-        # if angle must always be positive or negative, correct bad angle by reversing spin direction :   
+        # if angle must always be positive or negative, correct bad angle by reversing spin direction :
         servoangle = self.GetMotorAngle(self.motor)
         self.DebugString(10, "servo motor angle :" + str(servoangle))
-        if ( self.servoVS == 1 ) and ( servoangle < 0.05): 
+        if ( self.servoVS == 1 ) and ( servoangle < 0.05):
             if ( servoangle > -math.pi/2): self.Input("Servo", 0, -20)
             else: self.Input("Servo", 0, 20)
         elif ( self.servoVS == -1 ) and ( servoangle > -0.05):
@@ -160,30 +160,30 @@ class SpinServo(AI.SuperAI):
         return AI.SuperAI.Tick(self)
 
     def InvertHandler(self):
-        # do not move servo if VS defined 
+        # do not move servo if VS defined
         if ( self.servoVS  != 0 ): self.Input("Servo", 0, 0)
         # fire all weapons once per second (until we're upright!)
         while 1:
             for trigger in self.trigger2:
                 self.Input(trigger, 0, 1)
-            
+
             for i in range(0, 8):
                 yield 0
-                
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-                
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -202,7 +202,7 @@ class SpinServo(AI.SuperAI):
             elif id == 13: self.debug.get("line13").setText(string)
             elif id == 14: self.debug.get("line14").setText(string)
             elif id == 15: self.debug.get("line15").setText(string)
-			
+
     def SmartZoneEvent(self, direction, id, robot, chassis):
         if id == 1:
             if direction == 1:
@@ -211,8 +211,8 @@ class SpinServo(AI.SuperAI):
             if robot > 0:
                 if direction == 1:
                     # if not already well-positionned : move servo motor :
-                    servoangle = self.GetMotorAngle(self.motor)        
-                    if servoangle < (self.maxangle -self.delta): 
+                    servoangle = self.GetMotorAngle(self.motor)
+                    if servoangle < (self.maxangle -self.delta):
                         #next value after math.pi is -math.pi !
                         if servoangle > 0: self.Input("Servo", 0, -self.servospeed)
                         else: self.Input("Servo", 0, self.servospeed)
@@ -226,8 +226,8 @@ class SpinServo(AI.SuperAI):
                     if servoangle > (self.minangle + self.delta): self.Input("Servo", 0, self.servospeed)
                     elif servoangle < (self.minangle - self.delta): self.Input("Servo", 0, -self.servospeed)
                     else: self.Input("Servo", 0, 0)
-			
+
 
         return True
-			
+
 AI.register(SpinServo)

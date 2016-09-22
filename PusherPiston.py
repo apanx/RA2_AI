@@ -16,7 +16,7 @@ class PusherPiston(AI.SuperAI):
         self.zone = "weapon"
         self.triggers = ["Fire"]
         self.reloadTime = 0
-        self.reloadDelay = 3        
+        self.reloadDelay = 3
         self.triggerIterator = iter(self.triggers)
         self.tactics.append(Tactics.Charge(self))
         self.tactics.append(Tactics.Shove(self))
@@ -34,9 +34,9 @@ class PusherPiston(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            self.RegisterSmartZone(self.zone, 1)            
+            self.RegisterSmartZone(self.zone, 1)
         return AI.SuperAI.Activate(self, active)
- 
+
     def LostComponent(self, id):
         #print "Lost Component!"
         return AI.SuperAI.LostComponent(self, id)
@@ -55,5 +55,5 @@ class PusherPiston(AI.SuperAI):
                 AI.SuperAI.SmartZoneEvent(self, direction, id, robot, chassis)
 
         return True
-            
+
 AI.register(PusherPiston)

@@ -16,9 +16,9 @@ class FRWL(AI.SuperAI):
 
         self.tactics.append(Tactics.Charge(self))
         self.tactics.append(Tactics.Shove(self))
-        
+
         self.spin_range = 3.0
-        
+
         if 'range' in args:
             self.spin_range = args.get('range')
 
@@ -36,9 +36,9 @@ class FRWL(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
             self.RegisterSmartZone("squeeze", 1)
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -47,16 +47,16 @@ class FRWL(AI.SuperAI):
             self.Input("Clamp", 0, 100)
         else:
             self.Input("Clamp", 0, 0)
-            
+
         if self.weapons:
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
-            
+
             if enemy is not None and range < self.spin_range:
                 self.Input("Spin", 0, 1)
             elif self.GetInputStatus("Spin", 0) != 0:
                 self.Input("Spin", 0, 0)
-            
+
         return AI.SuperAI.Tick(self)
 
     def RobotInRange(self, robot_id):
@@ -67,9 +67,9 @@ class FRWL(AI.SuperAI):
             damage = self.GetLastDamageReceived()
             if damage[3] == robot_id and (plus.getTimeElapsed() - damage[2] < 1.0):
                 return (True, True)
-                
+
         return (False, False)
-        
+
     def LostComponent(self, id):
         #print "Lost Component!"
         return AI.SuperAI.LostComponent(self, id)
@@ -77,15 +77,15 @@ class FRWL(AI.SuperAI):
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
 
     def DebugString(self, id, string):
@@ -95,5 +95,5 @@ class FRWL(AI.SuperAI):
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
 
-        
+
 AI.register(FRWL)

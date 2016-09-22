@@ -10,21 +10,18 @@ import Tactics
 class Pinner(AI.SuperAI):
     "Pushes without backing up"
     name = "Pinner"
-    # Designed for true pushers, though does NOT back up repeatedly like Pusher.py does. 
-	# In-built average Throttle, Topspeed, Turn and Turnspeed values for easier AI-ing. Also invertible.
+    # Designed for true pushers, though does NOT back up repeatedly like Pusher.py does.
+    # In-built average Throttle, Topspeed, Turn and Turnspeed values for easier AI-ing. Also invertible.
     # Brought to you by Naryar
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-        
+
         self.tactics.append(Tactics.Engage(self))
-		
-	self.max_Throttle = 130
-	self.top_speed = 99
-	self.bInvertible = True
-	self.max_turn = 40
-	self.max_turn_speed = 3
-		
-        
+        self.max_Throttle = 130
+        self.top_speed = 99
+        self.bInvertible = True
+        self.max_turn = 40
+        self.max_turn_speed = 3
 
     def Activate(self, active):
         if active:
@@ -38,9 +35,9 @@ class Pinner(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
         return AI.SuperAI.Activate(self, active)
- 
+
     def LostComponent(self, id):
         #print "Lost Component!"
         return AI.SuperAI.LostComponent(self, id)
@@ -51,5 +48,5 @@ class Pinner(AI.SuperAI):
             elif id == 1: self.debug.get("line1").setText(string)
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
-        
+
 AI.register(Pinner)

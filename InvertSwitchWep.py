@@ -13,7 +13,7 @@ class InvertSwitchWep(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-               
+
         self.zone1 = "PrimaryWep"
         self.triggers1 = ["PrimaryWep"]
         self.zone2 = "SecondaryWep"
@@ -25,18 +25,18 @@ class InvertSwitchWep(AI.SuperAI):
         self.triggers5 = ["Srimech"]
 
         self.spin_range = 3.0
-        
+
         if 'range' in args:
             self.spin_range = args.get('range')
 
         if 'zone' in args: self.zone = args['zone']
-        
+
         if 'triggers' in args: self.triggers1 = args['triggers']
         if 'triggers' in args: self.triggers2 = args['triggers']
         if 'triggers' in args: self.triggers3 = args['triggers']
- 
+
         self.tactics.append(Tactics.Engage(self))
-        
+
     def Activate(self, active):
         if active:
             if AI.SuperAI.debugging:
@@ -49,12 +49,12 @@ class InvertSwitchWep(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
             self.RegisterSmartZone(self.zone1, 1)
             self.RegisterSmartZone(self.zone2, 2)
             self.RegisterSmartZone(self.zone3, 3)
             self.RegisterSmartZone(self.zone4, 4)
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -64,7 +64,7 @@ class InvertSwitchWep(AI.SuperAI):
 
         # spin up depending on enemy's range
         enemy, range = self.GetNearestEnemy()
-            
+
         if enemy is not None and range < self.spin_range:
             self.Input("Spin", 0, 1)
         elif self.GetInputStatus("Spin", 0) != 0:
@@ -74,9 +74,9 @@ class InvertSwitchWep(AI.SuperAI):
 
         targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
                 and not plus.isDefeated(x.robot)]
-                       
+
         bReturn = AI.SuperAI.Tick(self)
-        
+
         return bReturn
 
     def InvertHandler(self):
@@ -84,26 +84,26 @@ class InvertSwitchWep(AI.SuperAI):
         while 1:
             for trigger in self.triggers5:
                 self.Input(trigger, 0, 1)
-            
+
             for i in range(0, 8):
                 yield 0
-                
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
         if id in self.sweapons: self.sweapons.remove(id)
         if id in self.tweapons: self.tweapons.remove(id)
-        
+
         if not self.weapons and not self.sweapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
-                
+
     def DebugString(self, id, string):
         if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
@@ -129,5 +129,5 @@ class InvertSwitchWep(AI.SuperAI):
                 if direction == 1:
                     for trigger in self.triggers4: self.Input(trigger, 0, 4)
         return True
-    
+
 AI.register(InvertSwitchWep)

@@ -13,13 +13,13 @@ class Pillar(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-        
+
         self.spin_range = 3.0
         self.prevx = 0
         self.prevy = 0
         self.watermelon = 0
         self.immocounter = 0
-        
+
         if 'range' in args:
             self.spin_range = args.get('range')
 
@@ -37,7 +37,7 @@ class Pillar(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
@@ -56,12 +56,12 @@ class Pillar(AI.SuperAI):
                 self.watermelon = 0
 
             enemy, range = self.GetNearestEnemy()
-            
+
             if enemy is not None and range < self.spin_range and self.weapons and self.bImmobile == False and self.immocounter < 50:
                 self.Input("Spin", 0, 1)
             else:
                 self.Input("Spin", 0, 0)
-            
+
         return AI.SuperAI.Tick(self)
 
     def ImmobilityWarning(self, id, on):
@@ -71,7 +71,7 @@ class Pillar(AI.SuperAI):
         elif id in self.immobile_list:
             self.Input("Spin", 0, 0)
             del self.immobile_list[id]
-            
+
         if id == self.GetID():
             # keep track of our own immobility warning
             self.Input("Spin", 0, 0)
@@ -97,19 +97,19 @@ class Pillar(AI.SuperAI):
                 dir = vector3(self.GetDirection())
                 self.DriveToLocation((pos + dir * 3).asTuple())
                 yield 0
-        
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
-                
+
                 self.tactics.append(Tactics.Shove(self))
                 self.tactics.append(Tactics.Charge(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
 
     def DebugString(self, id, string):

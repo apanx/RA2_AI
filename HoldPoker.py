@@ -20,17 +20,17 @@ class HoldPoker(AI.SuperAI):
         self.reloadDelay = 4
         self.holdTime = 16
         self.holdDelay = 16
-        
+
         if 'triggers' in args: self.triggers = args['triggers']
         if 'reload' in args: self.reloadDelay = args['reload']
         if 'hold' in args: 
-        	self.holdDelay = args['hold']
-        	self.holdTime = args['hold']
+            self.holdDelay = args['hold']
+            self.holdTime = args['hold']
         
         self.triggerIterator = iter(self.triggers)
  
         self.tactics.append(Tactics.Engage(self))
-        
+
     def Activate(self, active):
         if active:
             #if AI.SuperAI.debugging:
@@ -62,17 +62,17 @@ class HoldPoker(AI.SuperAI):
             if len(targets) <= 0: self.holdTime = self.holdDelay
             if self.holdTime > 0 and len(targets) > 0: self.holdTime -= 1
             if len(targets) > 0 and self.holdTime <= 0:
-            	if self.reloadTime > 0: self.reloadTime -= 1 
-            	if len(targets) > 0 and self.reloadTime <= 0:
+                if self.reloadTime > 0: self.reloadTime -= 1 
+                if len(targets) > 0 and self.reloadTime <= 0:
 
-                	try:
-                    		trigger = self.triggerIterator.next()
-                	except StopIteration:
-                    		self.triggerIterator = iter(self.triggers)
-                   		trigger = self.triggerIterator.next()
+                    try:
+                        trigger = self.triggerIterator.next()
+                    except StopIteration:
+                        self.triggerIterator = iter(self.triggers)
+                        trigger = self.triggerIterator.next()
                
-               		self.Input(trigger, 0, 1)
-                	self.reloadTime = self.reloadDelay
+                    self.Input(trigger, 0, 1)
+                    self.reloadTime = self.reloadDelay
             
         return AI.SuperAI.Tick(self)
 

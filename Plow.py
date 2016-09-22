@@ -13,7 +13,7 @@ class Plow(AI.SuperAI):
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)
-        
+
         self.tactics.append(Tactics.Charge(self))
         self.tactics.append(Tactics.Shove(self))
 
@@ -29,14 +29,14 @@ class Plow(AI.SuperAI):
                 tbox.setText("")
                 tbox = self.debug.addText("line3", 0, 45, 100, 15)
                 tbox.setText("")
-            
+
         return AI.SuperAI.Activate(self, active)
 
-     
+
     def LostComponent(self, id):
         # if we lose all our weapons, stop using the Engage tactic and switch to Shove
         if id in self.weapons: self.weapons.remove(id)
-        
+
         if not self.weapons:
             tactic = [x for x in self.tactics if x.name == "Engage"]
             if len(tactic) > 0:
@@ -44,7 +44,7 @@ class Plow(AI.SuperAI):
 
                 self.tactics.append(Tactics.Charge(self))
                 self.tactics.append(Tactics.Shove(self))
-            
+
         return AI.SuperAI.LostComponent(self, id)
 
     def Disable(self,btarget):
@@ -59,7 +59,7 @@ class Plow(AI.SuperAI):
         if btarget == self: self.Turn(90)
         else: self.Turn(-90)
         if self.target: self.Turn(360)
-        
+
         return AI.SuperAI.Disable(self, btarget)
-  
+
 AI.register(Plow)
