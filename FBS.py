@@ -25,7 +25,7 @@ class FBS(AI.SuperAI):
         if 'accuracy' in args: self.accuracy = args.get('accuracy')
 
     def Activate(self, active):
-        plus.AI.__setattr__tickInterval__(self, 0.001)
+        self.tickInterval = 0.001
         print self.rampupfactor
 
         if active:
