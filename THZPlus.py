@@ -148,7 +148,7 @@ class THZPlus(AI.SuperAI):
                 yield 0
 
     def WhipBackAndForth(self, bTarget):
-        if bTarget and canFire = 1: self.whipTimer = 8
+        if bTarget and canFire == 1: self.whipTimer = 8
 
         if self.whipTimer > 0:
             # Whip back and forth!
@@ -165,7 +165,7 @@ class THZPlus(AI.SuperAI):
 
             self.whipTimer -= 1
 
-        if self.whipTimer = 0:
+        if self.whipTimer == 0:
             self.Input("Hammer", 0, -100)
 
     def WhipAround(self, bTarget):

@@ -9,7 +9,7 @@ import Tactics
 
 class Razorbackv3(AI.SuperAI):
     "Special AI for Razorback v3.  Drives forwards while self righting."
-    name = "Razorbackv3
+    name = "Razorbackv3"
 
     def __init__(self, **args):
         AI.SuperAI.__init__(self, **args)

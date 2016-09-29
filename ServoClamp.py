@@ -71,11 +71,11 @@ class ServoClamp(AI.SuperAI):
 
         if self.botinzone == 0 and (self.comptimer < self.NoChassisTime or self.compinzone == 0):
             #retract servo arm when not in use
-                if self.GetMotorAngle(self.servo) >= self.servostopangle or self.GetMotorAngle(self.servo) =< -math.pi*0.5:
+                if self.GetMotorAngle(self.servo) >= self.servostopangle or self.GetMotorAngle(self.servo) <= -math.pi*0.5:
                     self.Input("Servo", 0, 100)
-                if 0 > self.GetMotorAngle(self.servo) >= -math.pi*0.2 or 0 < self.GetMotorAngle(self.servo) =< self.servostopangle:
+                if 0 > self.GetMotorAngle(self.servo) >= -math.pi*0.2 or 0 < self.GetMotorAngle(self.servo) <= self.servostopangle:
                     self.Input("Servo", 0, -100)
-                if self.servostopangle >= self.GetMotorAngle(self.servo) >= self.servostartangle
+                if self.servostopangle >= self.GetMotorAngle(self.servo) >= self.servostartangle:
                     self.Input("Servo", 0, 0)
 
         bReturn = AI.SuperAI.Tick(self)
