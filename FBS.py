@@ -132,9 +132,9 @@ class FBS(AI.SuperAI):
                 self.DebugString(7, str(h))
 
                 h -= math.pi / 8 * self.direction
-            if h > math.pi: h -= 2 * math.pi
+                if h > math.pi: h -= 2 * math.pi
                 elif h < -math.pi: h += 2 * math.pi
-            h = abs(h)
+                h = abs(h)
 
                 if abs(self.GetTurning()) > self.spinspeed:
 
