@@ -17,11 +17,8 @@ class PSIBot(AI.SuperAI):
         #self.tactics.append(Tactics.Flee(self))
 
     def Activate(self, active):
-        plus.damage(1, 0, 50000, plus.getLocation(1))
-        plus.damage(1, 0, 50000, plus.getLocation(1))
-        plus.damage(1, 0, 50000, plus.getLocation(1))
         if active:
-            #if AI.SuperAI.debugging:
+            if AI.SuperAI.debugging:
                 self.debug = Gooey.Plain("watch", 0, 75, 200, 105)
                 tbox = self.debug.addText("line0", 0, 0, 200, 15)
                 tbox.setText("Throttle")
@@ -38,6 +35,17 @@ class PSIBot(AI.SuperAI):
                 tbox = self.debug.addText("line6", 0, 90, 200, 15)
                 tbox.setText("")
 
+            enemies = self.GetEnemies()
+            for enemy in enemies:
+                complist = plus.describe(enemy).splitlines()
+                for comp in range(len(complist)):
+                    max_HP = plus.getHitpoints(enemy, comp)
+                    plus.damage(enemy, comp, max_HP, plus.getLocation(enemy))
+                    plus.damage(enemy, comp, max_HP, plus.getLocation(enemy))
+
+                plus.damage(enemy, 0, 41, plus.getLocation(enemy))
+                plus.damage(enemy, 0, 41, plus.getLocation(enemy))
+                plus.damage(enemy, 0, 41, plus.getLocation(enemy))
 
         return AI.SuperAI.Activate(self, active)
 
@@ -47,9 +55,8 @@ class PSIBot(AI.SuperAI):
         self.DebugString(6, str(self.GetLocation()))
         return AI.SuperAI.Tick(self)
 
-
     def DebugString(self, id, string):
-        #if self.debug:
+        if self.debug:
             if id == 0: self.debug.get("line0").setText(string)
             elif id == 1: self.debug.get("line1").setText(string)
             elif id == 2: self.debug.get("line2").setText(string)
