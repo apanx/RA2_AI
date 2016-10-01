@@ -118,7 +118,7 @@ class Tank(AI.SuperAI):
             self.DebugString(7, str(-self.GetMotorAngle(self.motor)))
             self.DebugString(8, str(Winkel))
             if self.AimTowards(Winkel):
-                self.FireGun();
+                self.FireGun()
 
         return AI.SuperAI.Tick(self)
 
@@ -204,10 +204,11 @@ class FlameTank(Tank):
         self.tactics.append(Tactics.Engage(self))
 
     def Activate(self, active):
+        Tank.Activate(self, active)
         for trigger in self.secondary:
             self.Input(trigger, 0, 100)
 
-        return Tank.Activate(self, active)
+        return plus.AI.Activate(self, active)
 
 class MGTank(Tank):
     "Machinegun Tank"
