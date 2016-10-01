@@ -19,15 +19,16 @@ class FBS(AI.SuperAI):
         self.accuracy = 0.01 #Radians
         self.rampupfactor = (math.pi / 2 - self.accuracy) * (math.pi / 2 - (math.pi - self.accuracy) ) * -1
         self.direction = 1 # 1 or -1
+        self.tickInterval = 0.001
+        self.tickInterval_factor = 0.125 / self.tickInterval
 
         if 'direction' in args: self.direction = args.get('direction')
         if 'spinspeed' in args: self.spinspeed = args.get('spinspeed')
         if 'accuracy' in args: self.accuracy = args.get('accuracy')
+        if 'tickInterval' in args: self.tickInterval = args['tickInterval']
 
     def Activate(self, active):
-        self.tickInterval = 0.001
         print self.rampupfactor
-
         if active:
             if AI.SuperAI.debugging:
                 self.debug = Gooey.Plain("watch", 430, 75, 250, 165)
@@ -86,13 +87,13 @@ class FBS(AI.SuperAI):
         "This default generator is called when the bot is almost immobile."
         while 1:
             # back up for 2 seconds (will stop once we're not immobile)
-            for i in range(0, 2000):
+            for i in range(0, 16 * self.tickInterval_factor):
                 pos = vector3(self.GetLocation())
                 dir = vector3(self.GetDirection())
                 self.NormalDriveToLocation((pos - dir * 3).asTuple(), True)
                 yield 0
             # go forward for 2 seconds
-            for i in range(0, 2000):
+            for i in range(0, 16 * self.tickInterval_factor):
                 pos = vector3(self.GetLocation())
                 dir = vector3(self.GetDirection())
                 self.NormalDriveToLocation((pos + dir * 3).asTuple(), True)
@@ -103,12 +104,12 @@ class FBS(AI.SuperAI):
         while 1:
             self.Input("SRM", 0, 1)
 
-            for i in range(0, 2000):
+            for i in range(0, 16 * self.tickInterval_factor):
                 yield 0
 
     def Think(self):
         self.Evaluate()
-        self.countdownToEvaluation = 250
+        self.countdownToEvaluation = 2 * self.tickInterval_factor
 
 
     def DriveToWaypoints(self, waypoints, in_reverse = False):
@@ -156,7 +157,7 @@ class FBS(AI.SuperAI):
 
                 else:
                     self.Turn(100 * self.direction)
-            found = True
+                found = True
         if len(waypoints) == 0:
             self.Turn(100 * self.direction)
             self.Throttle(0)
