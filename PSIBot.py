@@ -50,9 +50,18 @@ class PSIBot(AI.SuperAI):
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
+        if AI.SuperAI.debugging:
+            speed = self.GetSpeed()
+            self.DebugString(4, "Speed = " + str(speed))
+
+            turning_speed = self.GetTurning()
+            self.DebugString(5, "TSpeed = " + str(turning_speed))
+
+            self.DebugString(6, str(self.GetLocation()))
+
         Me = self.GetID()
         plus.force(Me, 0, 85 * plus.getWeight(Me), 0)
-        self.DebugString(6, str(self.GetLocation()))
+
         return AI.SuperAI.Tick(self)
 
     def DebugString(self, id, string):
