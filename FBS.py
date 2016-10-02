@@ -19,7 +19,7 @@ class FBS(AI.SuperAI):
         self.accuracy = 0.01 #Radians
         self.rampupfactor = (math.pi / 2 - self.accuracy) * (math.pi / 2 - (math.pi - self.accuracy) ) * -1
         self.direction = 1 # 1 or -1
-        self.tickInterval = 0.001
+        self.tickInterval = 1.0/30.0
         self.tickInterval_factor = 0.125 / self.tickInterval
 
         if 'direction' in args: self.direction = args.get('direction')
