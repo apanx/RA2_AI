@@ -17,8 +17,7 @@ class FBSFlame(FBS):
 
     def Activate(self, active):
         self.Input("Flame", 0, 100)
-        FBS.Activate(self, active)
 
-        return plus.AI.Activate(self, active)
+        return FBS.Activate(self, active)
 
 AI.register(FBSFlame)

@@ -18,19 +18,18 @@ class FBSTrinityInvertDir(FBS):
 
     def __init__(self, **args):
         FBS.__init__(self, **args)
-        self.trinityrange = 40
+        self.trinity_turnspeed = 12
+
+        self.triggers = ["Fire"]
+        if 'triggers' in args: self.triggers = args['triggers']
+
+        self.triggerIterator = iter(self.triggers)
 
     def Tick(self):
-        FBS.Tick(self)
-        # fire weapon
+        bReturn = FBS.Tick(self)
+        # fire weapon when turning fast enough
         if self.weapons:
-            targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
-                and not plus.isDefeated(x.robot)]
-
-            # slight delay between firing
-            if self.reloadTime > 0: self.reloadTime -= 1
-
-            if len(targets) > 0 and self.reloadTime <= 0:
+            if abs(self.GetTurning()) > self.trinity_turnspeed:
                 try:
                     trigger = self.triggerIterator.next()
                 except StopIteration:
@@ -38,9 +37,8 @@ class FBSTrinityInvertDir(FBS):
                     trigger = self.triggerIterator.next()
 
                 self.Input(trigger, 0, 1)
-                self.reloadTime = self.reloadDelay
 
-        return plus.AI.Tick(self)
+        return bReturn
 
     def Turn(self, turning):
         turning = min(max(turning, -100), 100)

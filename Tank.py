@@ -204,11 +204,11 @@ class FlameTank(Tank):
         self.tactics.append(Tactics.Engage(self))
 
     def Activate(self, active):
-        Tank.Activate(self, active)
+        bReturn = Tank.Activate(self, active)
         for trigger in self.secondary:
             self.Input(trigger, 0, 100)
 
-        return plus.AI.Activate(self, active)
+        return bReturn
 
 class MGTank(Tank):
     "Machinegun Tank"

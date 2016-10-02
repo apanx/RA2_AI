@@ -26,7 +26,7 @@ class FBSPlus(FBS):
         if 'range' in args: self.spin_range = args.get('range')
 
     def Tick(self):
-        FBS.Tick(self)
+        bReturn = FBS.Tick(self)
         if self.weapons:
             # spin up depending on enemy's range
             enemy, range = self.GetNearestEnemy()
@@ -36,6 +36,6 @@ class FBSPlus(FBS):
             elif self.GetInputStatus("Spin", 0) != 0:
                 self.Input("Spin", 0, 0)
 
-        return plus.AI.Tick(self)
+        return bReturn
 
 AI.register(FBSPlus)
