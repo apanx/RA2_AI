@@ -36,8 +36,6 @@ class PopupMultiZone(AI.SuperAI):
 
         if 'NoChassisTime' in args: self.NoChassisTime = args.get('NoChassisTime') * 4
 
-        self.triggerIterator = iter(self.triggers)
-
         if 'tactic' in args:
             self.theTactic = args['tactic']
             if   self.theTactic  == "Charge" : self.tactics.append(Tactics.Charge(self))
@@ -82,7 +80,7 @@ class PopupMultiZone(AI.SuperAI):
             self.comptimer1 = 0
 
         if self.weapons and (self.botinzone1 == 1 or (self.comptimer1 >= self.NoChassisTime and self.compinzone1 == 1)):
-            for trigger in self.triggers1: self.Input("Fire1", 0, 1)
+            self.Input("Fire1", 0, 1)
 
         # if a component is in the second smart zone but not the chassis, wait to find chassis before firing weapons
         if self.compinzone2 == 1 and self.botinzone2 == 0:
@@ -92,7 +90,7 @@ class PopupMultiZone(AI.SuperAI):
             self.comptimer2 = 0
 
         if self.weapons and (self.botinzone2 == 1 or (self.comptimer2 >= self.NoChassisTime and self.compinzone2 == 1)):
-            for trigger in self.triggers1: self.Input("Fire2", 0, 1)
+            self.Input("Fire2", 0, 1)
 
         # if a component is in the third smart zone but not the chassis, wait to find chassis before firing weapons
         if self.compinzone3 == 1 and self.botinzone3 == 0:
@@ -102,7 +100,7 @@ class PopupMultiZone(AI.SuperAI):
             self.comptimer3 = 0
 
         if self.weapons and (self.botinzone3 == 1 or (self.comptimer3 >= self.NoChassisTime and self.compinzone3 == 1)):
-            for trigger in self.triggers1: self.Input("Fire3", 0, 1)
+            self.Input("Fire3", 0, 1)
 
         # if a component is in the fourth smart zone but not the chassis, wait to find chassis before firing weapons
         if self.compinzone4 == 1 and self.botinzone4 == 0:
@@ -112,12 +110,7 @@ class PopupMultiZone(AI.SuperAI):
             self.comptimer4 = 0
 
         if self.weapons and (self.botinzone4 == 1 or (self.comptimer4 >= self.NoChassisTime and self.compinzone4 == 1)):
-            for trigger in self.triggers1: self.Input("Fire4", 0, 1)
-
-        bReturn = AI.SuperAI.Tick(self)
-
-        return bReturn
-
+            self.Input("Fire4", 0, 1)
 
         return AI.SuperAI.Tick(self)
 
