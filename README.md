@@ -6,27 +6,27 @@ Version 2016-10-04
 
 #Supporting Files
 ##ImprovedTactics
-Improved Charge and modified Engage Tactic, Includes Ram, ReverseRam and MeltyBrain
+Improved Charge and modified Engage Tactic, Includes Ram, ReverseRam and MeltyBrain  
 Replace original Tactics.py
 
 #List over AIs, Author, Arguments and short description
 
 ##Arrowhead, Madiaba
-range, zone1, zone2, srimech
+range, zone1, zone2, srimech  
 Spinner AI that backs up if the opponent gets under it.
 
 ##Batmobile
 Like Popup but tweaked for BatmobileAI.
 
 ##Bee
-Simply a cross between Whipper and Spinner - for SnS/HS hybrids that use a smartzone.
+Simply a cross between Whipper and Spinner - for SnS/HS hybrids that use a smartzone.  
 Whipper that incorporates Spinner.
 
 ###BeeCC
-Variant of Bee that spins in opposite direction
+Variant of Bee that spins in opposite direction  
 
 ##BiDirRam
-"For rammers with weapons in both front and back.  Dynamically switches directions and attacks with whichever side has more weapons."
+"For rammers with weapons in both front and back.  Dynamically switches directions and attacks with whichever side has more weapons."  
 Use 'weapons' to indicate weapons in the front, and 'sweapons' to indicate weapons in the back.
 
 ##BountyHunter
@@ -39,23 +39,20 @@ Slam em and hold em
 Spinner with two smartzones and SRM
 
 ##D_SMFE_Turret_Machinegun_Spin
-"SMFE for Machinegun Vehicle (with optional turret and spinner)"
-NOTES: Bindings' coding for __INIT_ stuff:
-'motor': 5  (5=component number).
-
-'altitude': 0.5  (distance above the floor)
-
-'TimerSpeed3thru4' : 1  (1-5 integer)
-'TimerSpeed5thru8' : 1  (1-5 integer)
-'TimerSpeed1thru7' : 1  (1-5 integer)
-
+"SMFE for Machinegun Vehicle (with optional turret and spinner)"  
+NOTES: Bindings' coding  
+'motor': 5  (5=component number).  
+'altitude': 0.5  (distance above the floor)  
+'TimerSpeed3thru4' : 1  (1-5 integer)  
+'TimerSpeed5thru8' : 1  (1-5 integer)  
+'TimerSpeed1thru7' : 1  (1-5 integer)  
 'whip': "around"  (means whip around in circle; else default = back and forth)
 
 ##Drum, Naryar 
-OBSOLETE - VertSpinner includes this function 
-"When inverted, changes the spinner's direction "
+OBSOLETE - VertSpinner includes this function   
+When inverted, changes the spinner's direction  
 Intended for invertible bots (notably drums and invertible face spinners) that should still spin their weapon upwards when inverted.
-You must use an ANALOG CONTROL to wire your spinner, with Positive axis being the upward spinning direction when your bot isn't inverted.
+You must use an ANALOG CONTROL to wire your spinner, with Positive axis being the upward spinning direction when your bot isn't inverted.  
 The AI will use the Negative axis when inverted, so your spinner will spin upwards, as it should for good gut ripping capability.
 Not intended for hybrids, and there is no srimech command.
 Brought to you by Naryar and ripped off Click's VertSpinner.py.
@@ -64,23 +61,23 @@ Brought to you by Naryar and ripped off Click's VertSpinner.py.
 Fires two independent triggers with own zone and ReloadTime for each
 
 ##ElectricHammer
-"Swings a hammer on a spin motor back and forth."
-Use variable 'NoChassisTime' in Bindings.py to set the amount of time in half-seconds the AI will wait to find the chassis before giving up and firing, when there are components in the smart zone.
-Use variable 'StartAngle' to set the angle the hammer will revert to when not in use.  For best results, this should be a multiple of pi/2.
+Swings a hammer on a spin motor back and forth.  
+Use variable 'NoChassisTime' in Bindings.py to set the amount of time in half-seconds the AI will wait to find the chassis before giving up and firing, when there are components in the smart zone.  
+Use variable 'StartAngle' to set the angle the hammer will revert to when not in use.  For best results, this should be a multiple of pi/2.  
 Use variable 'SwingTime' to tell the AI how long in ticks it should take to retract the hammer.  A tick is 1/8 second.
 
 ##Export, apanx
-Requires modification of __init__.py to get BotName
+Requires modification of __init__.py to get BotName  
 Saves file with all bot components for current bot.
 
 ##FBS, apanx
-An AI specially made for SnS that you want to go for the opponent while spinning. (Not to be confused with FBS_1 or FBS_2, that aren't as good as this anyways :P)
-Actually will move towards the opponent by spinning in small circles while advancing (for the math geeks out there, the path it will follow is an epicycloid)
+An AI specially made for SnS that you want to go for the opponent while spinning.  
+Actually will move towards the opponent by spinning in small circles while advancing (for the math geeks out there, the path it will follow is an epicycloid)  
 Wire your bot normally, and then use the binding entries to customize your FBS. Spinspeed and Direction are the most important.
-'spinspeed' defines how your bot will balance rotational speed and translation speed.
-A low spinspeed will make it faster but it will spin on itself slower, and it will make wider circles while advancing.
-A high spinspeed will make it slower but it will spin faster (=> more damage and knockback in most cases), and will move regularly.
-'direction' will define the direction of your bot's spinning (1 is positive axis, -1 is negative axis on your LeftRight control)
+'spinspeed' defines how your bot will balance rotational speed and translation speed.  
+A low spinspeed will make it faster but it will spin on itself slower, and it will make wider circles while advancing.  
+A high spinspeed will make it slower but it will spin faster (=> more damage and knockback in most cases), and will move regularly.  
+'direction' will define the direction of your bot's spinning (1 is positive axis, -1 is negative axis on your LeftRight control)  
 It will change direction when inverted however - if you want to avoid that (notably if yu have an unidirectional weapon that works better when spinning one way), use FBSInvertDir.py.
 
 ###FBSInvertDir
@@ -105,29 +102,29 @@ FBS with EternalFlame.py-style flamethrower control.
 "For SnS's, with improved Immobility handling."
 
 ##FBS_2, Madiaba
-"For single-direction full body spinners with active or static weapons, with improved immobility handling.  Also has the optional feature of pulsing the active weapon on and off, for shell spinners that are hard to drive when the weapon is on."
-Uses standard 'LeftRight' control for spinning.  'Spin' button for active weapons.  'Trinity' button for activating Trinity glitch pistons.
-BINDINGS SETTINGS 
-'range' is the range for spinning weapons.
-'fbs_range' is the range for full-body spinning.
-'PreSpinEntrance' is a time at the beginning of the match the AI won't spin, to get further in the arena.
-'clockwise' value of 1 makes the full-body spin direction right/clockwise.  Any other value makes it left/counterclockwise.
-'chase_time' is the time interval in seconds with no hits after which the AI will stop spinning temporarily and chase down the opponent.
-'Pulse' is the number of ticks the active weapon should stay on PLUS the number of ticks it stays off.  A tick is 1/8 second.
-'Coast' is the number of ticks the active weapon should turn off and coast for.  This should be less than the Pulse value.  For equal times on/off, set Coast equal to half of Pulse.
-'SRcycle' is the number of ticks the weapon should spin in one direction before reversing when attempting to self right.
-NOTE:  You must have the correct ID numbers of the bot's weapons in Bindings.py for the chase_time feature to work!!!
+For single-direction full body spinners with active or static weapons, with improved immobility handling.  Also has the optional feature of pulsing the active weapon on and off, for shell spinners that are hard to drive when the weapon is on.  
+Uses standard 'LeftRight' control for spinning.  'Spin' button for active weapons.  'Trinity' button for activating Trinity glitch pistons.  
+BINDINGS SETTINGS  
+'range' is the range for spinning weapons.  
+'fbs_range' is the range for full-body spinning.  
+'PreSpinEntrance' is a time at the beginning of the match the AI won't spin, to get further in the arena.  
+'clockwise' value of 1 makes the full-body spin direction right/clockwise.  Any other value makes it left/counterclockwise.  
+'chase_time' is the time interval in seconds with no hits after which the AI will stop spinning temporarily and chase down the opponent.  
+'Pulse' is the number of ticks the active weapon should stay on PLUS the number of ticks it stays off.  A tick is 1/8 second.  
+'Coast' is the number of ticks the active weapon should turn off and coast for.  This should be less than the Pulse value.  For equal  times on/off, set Coast equal to half of Pulse.  
+'SRcycle' is the number of ticks the weapon should spin in one direction before reversing when attempting to self right.  
+NOTE:  You must have the correct ID numbers of the bot's weapons in Bindings.py for the chase_time feature to work!!!  
 
 ###Bumblebee, Madiaba
-"Same as FBS_2, but needs custom def Turn in order to be invertible."
-Uses standard 'LeftRight' control for spinning.  'Spin' button for active weapons.
-BINDINGS SETTINGS 
-'range' is the range for spinning weapons.
+"Same as FBS_2, but needs custom def Turn in order to be invertible."  
+Uses standard 'LeftRight' control for spinning.  'Spin' button for active weapons.  
+BINDINGS SETTINGS  
+'range' is the range for spinning weapons.  
 'fbs_range' is the range for full-body spinning.
-'PreSpinEntrance' is a time at the beginning of the match the AI won't spin, to get further in the arena.
-'right' value of 1 makes the full-body spin direction right/clockwise.  Any other value makes it left/counterclockwise.
-'chase_time' is the time interval in seconds with no hits after which the AI will stop spinning temporarily and chase down the opponent.
-NOTE:  You must have the correct ID numbers of the bot's weapons in Bindings.py for the chase_time feature to work!!!
+'PreSpinEntrance' is a time at the beginning of the match the AI won't spin, to get further in the arena.  
+'right' value of 1 makes the full-body spin direction right/clockwise.  Any other value makes it left/counterclockwise.  
+'chase_time' is the time interval in seconds with no hits after which the AI will stop spinning temporarily and chase down the opponent.  
+NOTE:  You must have the correct ID numbers of the bot's weapons in Bindings.py for the chase_time feature to work!!!  
 
 ###SnS_2Invertible, apanx
 Based on older version of FBS_2. SnS that spins same direction when inverted.
