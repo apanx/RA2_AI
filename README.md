@@ -1,7 +1,7 @@
 #Robot Arena 2 AI Python Repository
 
-Contains most of the AI Python files created by the Robot Arena 2 community
-Compiled by apanx
+Contains most of the AI Python files created by the Robot Arena 2 community  
+Compiled by apanx  
 Version 2016-10-04
 
 #Supporting Files
