@@ -220,7 +220,7 @@ name of Firind controler attached to servo is 'ServoFire'
 
 ##Maatet, PhiletBabe
 "Omni strategy with use of 1 servo motor"
----
+
 class spin servo : like omni AI but allow the monitoring of 1 servo motor.
 the servo motor may be mount to spin horizontaly or verticvaly
 minimum binding.py declaration :    list.append(("mBotName","OmniServo",{'weapons':( 1)}))
@@ -242,7 +242,7 @@ note1 :  RA2 angles goes from -math.pi to Math.pi. spinning clockwise (positive 
 note2:  sometime your bot may fly, lovely but fully useless
 note3: TO IMPROVE :give bad result when others custom zones (ie 'weapon'for piston or 'flip' )  exists
 author : PhiletBabe supported by the irreplaceable Madiaba. 2008
----
+
 
 ##MadTactics
 Set of Tactics used for MultiBotAttacker and MultiBotAttacker. Also contains Tactic adapted for Jousting Arena.
@@ -316,7 +316,7 @@ Saves energy by shutting off weapon motor(s) when NearestEnemy is not near.
 OmniRam that Inputs Throttle 0.
 
 ###OmniServo, PhiletBabe
----
+
 class omni servo : like omni AI but allow the monitoring of 1 servo motor.
 the servo motor may be mount to spin horizontaly or verticvaly
 minimum binding.py declaration :    list.append(("mBotName","OmniServo",{'weapons':( 1)}))
@@ -339,7 +339,7 @@ note2:  seems to have problem when stopping servo ( selfinput("Servo",0,0) )
 note3:  sometime your bot may fly, lovely but fully useless
 note4: give bad result when others custom zones (ie 'weapon'for piston or 'flip' )  exists
 author : PhiletBabe supported by the irreplaceable Madiaba. 2008
----
+
 
 ###OmniSpin
 VARIANT of Omni that uses the Spinner variant of RobotInRange
@@ -383,7 +383,7 @@ Special AI for SFTW
 
 ###SpinServo, PhiletBabe
 "Omni strategy with use of 1 servo motor"
----
+
 class spin servo : like omni AI but allow the monitoring of 1 servo motor.
 the servo motor may be mount to spin horizontaly or verticvaly
 minimum binding.py declaration :    list.append(("mBotName","OmniServo",{'weapons':( 1)}))
@@ -405,7 +405,7 @@ note1 :  RA2 angles goes from -math.pi to Math.pi. spinning clockwise (positive 
 note2:  sometime your bot may fly, lovely but fully useless
 note3: TO IMPROVE :give bad result when others custom zones (ie 'weapon'for piston or 'flip' )  exists
 author : PhiletBabe supported by the irreplaceable Madiaba. 2008
----
+
 
 ###SpinupOmni2
 "Waits for weapon to spin up before moving.  Also reverses weapon if it gets jammed."
