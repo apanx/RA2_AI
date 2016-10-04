@@ -551,6 +551,9 @@ NOTES: Bindings' coding for __INIT_ stuff:
 
 'SRM_TImer' : 1  (1-? integer in Bindings line)
 
+##UltraAI, apanx
+The Greatest AI
+
 ##VertSpinner
 "Self-rights by reversing the spinner direction and firing additional optional srimech."
 NOTE: You must wire your spinner with an ANALOG CONTROL to work!
