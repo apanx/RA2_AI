@@ -7,7 +7,7 @@ import Gooey
 import math
 import Tactics
 
-class Whipper(AI.SuperAI):
+class Bee(AI.SuperAI):
     "Bee SpinWhip strategy"
     name = "Bee"
 
@@ -127,4 +127,4 @@ class Whipper(AI.SuperAI):
             elif id == 2: self.debug.get("line2").setText(string)
             elif id == 3: self.debug.get("line3").setText(string)
 
-AI.register(Whipper)
+AI.register(Bee)
