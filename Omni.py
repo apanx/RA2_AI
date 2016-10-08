@@ -23,6 +23,8 @@ class Omni(AI.SuperAI):
 
         self.spin_range = 3.0
 
+        self.theTactic = "Engage"
+
         if 'range' in args:
             self.spin_range = args.get('range')
 
@@ -33,12 +35,8 @@ class Omni(AI.SuperAI):
 
         if 'tactic' in args:
             self.theTactic = args['tactic']
-            if   self.theTactic  == "Charge" : self.tactics.append(Tactics.Charge(self))
-            elif self.theTactic  == "Ram" : self.tactics.append(Tactics.Ram(self))
-            elif self.theTactic  == "Shove" : self.tactics.append(Tactics.Shove(self))
-            elif self.theTactic  == "Engage" : self.tactics.append(Tactics.Engage(self))
-            else: self.tactics.append(Tactics.Engage(self))
-        else: self.tactics.append(Tactics.Engage(self))
+
+        self.tactics.append(getattr(Tactics, self.theTactic)(self))
 
     def Activate(self, active):
         if active:
