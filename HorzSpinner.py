@@ -28,7 +28,7 @@ class HorzSpinner(AI.SuperAI):
 
     def Activate(self, active):
         if active:
-            #if AI.SuperAI.debugging:
+            if AI.SuperAI.debugging:
                 self.debug = Gooey.Plain("watch", 0, 75, 200, 105)
                 tbox = self.debug.addText("line0", 0, 0, 200, 15)
                 tbox.setText("Throttle")
