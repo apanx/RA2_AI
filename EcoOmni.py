@@ -6,8 +6,9 @@ import Arenas
 import Gooey
 import math
 import Tactics
+from Omni import Omni
 
-class EcoOmni(AI.SuperAI):
+class EcoOmni(Omni):
     "Energy-efficient, environmentally friendly, 100% organic (okay maybe not that last) Omni."
     name = "EcoOmni"
     # Has the option of using a smart zone for spinner activation.  Name this zone "spin" and then put 'UseSpinZone':1 in Bindings.  Set 'range' to something high like 99.
@@ -18,15 +19,11 @@ class EcoOmni(AI.SuperAI):
     # 'PulseRange' is the range within which the weapon should spin constantly.  A 0 value makes it always pulse.
 
     def __init__(self, **args):
-        AI.SuperAI.__init__(self, **args)
+        Omni.__init__(self, **args)
 
-        self.zone = "weapon"
+
         self.zone2 = "spin"
         self.zone3 = "weapon2"
-        self.triggers = ["Fire"]
-        self.trigger2 = ["Srimech"]
-        self.reloadTime = 0
-        self.reloadDelay = 3
         self.goodFunction = self.GoodStuckHandler
         self.wiggletimer = -8
         self.srimechtimer = 0
@@ -36,14 +33,6 @@ class EcoOmni(AI.SuperAI):
         self.botinzone3 = 0
         self.usespinzone = 0
         if 'UseSpinZone' in args: self.usespinzone = args.get('UseSpinZone')
-
-        self.spin_range = 3.0
-
-        if 'range' in args:
-            self.spin_range = args.get('range')
-
-        if 'triggers' in args: self.triggers = args['triggers']
-        if 'reload' in args: self.reloadDelay = args['reload']
 
         self.pulsetime = 0
         if 'Pulse' in args: self.pulsetime = args.get('Pulse')
@@ -55,45 +44,26 @@ class EcoOmni(AI.SuperAI):
         self.spinup = 2
         if 'StartSpinup' in args: self.spinup = args.get('StartSpinup')
 
-        self.triggerIterator = iter(self.triggers)
-
-        self.tactics.append(Tactics.Engage(self))
-
     def Activate(self, active):
-        if active:
-            if AI.SuperAI.debugging:
-                self.debug = Gooey.Plain("watch", 0, 75, 512, 75)
-                tbox = self.debug.addText("line0", 0, 0, 100, 15)
-                tbox.setText("Throttle")
-                tbox = self.debug.addText("line1", 0, 15, 100, 15)
-                tbox.setText("Turning")
-                tbox = self.debug.addText("line2", 0, 30, 100, 15)
-                tbox.setText("")
-                tbox = self.debug.addText("line3", 0, 45, 100, 15)
-                tbox.setText("")
-                tbox = self.debug.addText("line4", 10, 60, 512, 15)
-                tbox.setText("")
+        bReturn = Omni.Activate(self, active)
 
-            self.RegisterSmartZone(self.zone, 1)
+
+        if active:
             self.RegisterSmartZone(self.zone2, 2)
             self.RegisterSmartZone(self.zone3, 3)
-
         else:
             # get rid of reference to self
             self.goodFunction = None
 
-        return AI.SuperAI.Activate(self, active)
+        return bReturn
 
     def Tick(self):
-        #self.DebugString(4, str(self.zone2))
         # spin weapons briefly at start because for some dumb reason we can't move otherwise.
         if plus.getTimeElapsed() <= self.spinup:
             self.Input("Spin", 0, 100)
 
         # spin up depending on enemy's range
         enemy, range = self.GetNearestEnemy()
-        if enemy is not None:
-            heading = self.GetHeadingToID(enemy, False)
 
         # spin weapons only when necessary, and don't waste battery on them when we're being counted out!
         if enemy is not None and self.weapons and range < self.spin_range and not self.bImmobile and (self.botinzone2 == 1 or self.usespinzone == 0):
@@ -134,26 +104,17 @@ class EcoOmni(AI.SuperAI):
         bReturn = AI.SuperAI.Tick(self)
 
         # call this now so it takes place after other driving commands
-        if self.goodFunction: self.goodFunction(len(targets) > 0)
+        if self.goodFunction: self.goodFunction()
 
         return bReturn
 
-    def InvertHandler(self):
-        # fire all weapons once per second (until we're upright!)
-        while 1:
-            for trigger in self.trigger2:
-                self.Input(trigger, 0, 1)
 
-            for i in range(0, 8):
-                yield 0
 
     def StuckHandler(self):
         "Do nothing because the GoodStuckHandler function is better."
-        while 1:
-            for i in range(0, 16):
-                yield 0
+        pass
 
-    def GoodStuckHandler(self, bTarget):
+    def GoodStuckHandler(self):
         if self.bImmobile:
             self.srimechtimer += 1
             # keep driving in one direction as long as we can
@@ -188,28 +149,6 @@ class EcoOmni(AI.SuperAI):
             self.srimechtimer = 0
             self.srispintimer = 0
             self.wiggletimer = -8
-
-    def LostComponent(self, id):
-        # if we lose all our weapons, stop using the Engage tactic and switch to Shove
-        if id in self.weapons: self.weapons.remove(id)
-
-        if not self.weapons:
-            tactic = [x for x in self.tactics if x.name == "Engage"]
-            if len(tactic) > 0:
-                self.tactics.remove(tactic[0])
-
-                self.tactics.append(Tactics.Shove(self))
-                self.tactics.append(Tactics.Charge(self))
-
-        return AI.SuperAI.LostComponent(self, id)
-
-    def DebugString(self, id, string):
-        if self.debug:
-            if id == 0: self.debug.get("line0").setText(string)
-            elif id == 1: self.debug.get("line1").setText(string)
-            elif id == 2: self.debug.get("line2").setText(string)
-            elif id == 3: self.debug.get("line3").setText(string)
-            elif id == 4: self.debug.get("line4").setText(string)
 
     def SmartZoneEvent(self, direction, id, robot, chassis):
         if id == 1:

@@ -7,8 +7,9 @@ import Gooey
 import math
 import Tactics
 import time
+from Omni import Omni
 
-class OmniServo(AI.SuperAI):
+class OmniServo(Omni):
     "Omni strategy with use of 1 servo motor"
     name = "OmniServo"
 # ==============================================================
@@ -37,14 +38,7 @@ class OmniServo(AI.SuperAI):
 # ==============================================================
 
     def __init__(self, **args):
-        AI.SuperAI.__init__(self, **args)
-
-        self.zone = "weapon"
-        self.triggers = ["Fire"]
-        self.trigger2 = ["Srimech"]
-        self.reloadTime = 0
-        self.reloadDelay = 3
-        self.spin_range = 3.0
+        Omni.__init__(self, **args)
         # declare  zone and variables associated with the servo motor :
         self.zone2 = "zoneservo1"
         self.zone3 = "zoneservo2"
@@ -58,24 +52,18 @@ class OmniServo(AI.SuperAI):
         # servoVS = 0 : no restriction to servo angle motor. Default value.
         self.servoVS = 0
         #read theses values from bindings.py :
-        if 'minangle' in args: self.minangle=args['minangle']
-        if 'maxangle' in args: self.maxangle=args['maxangle']
+        if 'minangle' in args: self.minangle = args['minangle']
+        if 'maxangle' in args: self.maxangle = args['maxangle']
         if self.minangle > self.maxangle:
             xxx = self.minangle
             self.minangle = self.maxangle
             self.maxangle = xxx
-        if 'servoVS' in args: self.servoVS=args['servoVS']
-        if 'servospeed' in args: self.servospeed=args['servospeed']
+        if 'servoVS' in args: self.servoVS = args['servoVS']
+        if 'servospeed' in args: self.servospeed = args['servospeed']
         self.delta = 0.3
-        if 'range' in args:
-            self.spin_range = args.get('range')
-
-        if 'triggers' in args: self.triggers = args['triggers']
-        if 'reload' in args: self.reloadDelay = args['reload']
+        if 'delta' in args: self.delta = args['delta']
         # to display the current angle of the servo motor uncomment thoses lines :
-        #self.debug = True
         #AI.SuperAI.debugging = True
-        self.tactics.append(Tactics.Engage(self))
 
 
     def Activate(self, active):
@@ -106,80 +94,37 @@ class OmniServo(AI.SuperAI):
                 tbox.setText("")
             # standard smart zone :
             self.RegisterSmartZone(self.zone, 1)
-            self.RegisterSmartZone(self.zone2,2)
-            self.RegisterSmartZone(self.zone3,3)
+            self.RegisterSmartZone(self.zone2, 2)
+            self.RegisterSmartZone(self.zone3, 3)
             #define identifier of servo-motor
-            goon = 1
-            i = 0
-            while goon == 1:
-                if i  == self.GetNumComponents(): break
+            for i in range(self.GetNumComponents()):
                 currentType =  self.GetComponentType(i)
                 if currentType == "ServoMotor": self.motor = i
-                i = i+ 1
+
         return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
         # fire weapon
-
+        bReturn = Omni.Tick(self)
         if self.weapons:
             servoangle = self.GetMotorAngle(self.motor)
             self.DebugString(10, "Current servo motor angle : " + str(servoangle))
-            # spin up depending on enemy's range
-            enemy, range = self.GetNearestEnemy()
-
-            if enemy is not None and range < self.spin_range:
-                self.Input("Spin", 0, 1)
-            elif self.GetInputStatus("Spin", 0) != 0:
-                self.Input("Spin", 0, 0)
-
-            targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
-                and not plus.isDefeated(x.robot)]
-
-            # slight delay between firing
-            if self.reloadTime > 0: self.reloadTime -= 1
-
-            if len(targets) > 0 and self.reloadTime <= 0:
-                try:
-                    trigger = self.triggerIterator.next()
-                except StopIteration:
-                    self.triggerIterator = iter(self.triggers)
-                    trigger = self.triggerIterator.next()
-
-                self.Input(trigger, 0, 1)
-                self.reloadTime = self.reloadDelay
 
         servoangle = self.GetMotorAngle(self.motor)
         self.DebugString(10, "servo motor angle :" + str(servoangle))
         if ( self.servoVS == 1 ) and ( servoangle < 0):
-            if ( servoangle > -math.pi/2): self.Input("Servo", 0, -15)
-            else: self.Input("Servo", 0, 15)
+            if ( servoangle > -math.pi/2):
+                self.Input("Servo", 0, -15)
+            else:
+                self.Input("Servo", 0, 15)
         elif ( self.servoVS == -1 ) and ( servoangle > 0):
-            if ( servoangle > math.pi/2): self.Input("Servo", 0, -15)
-        else:  self.Input("Servo", 0, 0)
-        return AI.SuperAI.Tick(self)
+            if ( servoangle > math.pi/2):
+                self.Input("Servo", 0, -15)
+        else:
+            self.Input("Servo", 0, 0)
 
-    def InvertHandler(self):
-        # fire all weapons once per second (until we're upright!)
-        while 1:
-            for trigger in self.trigger2:
-                self.Input(trigger, 0, 1)
+        return bReturn
 
-            for i in range(0, 8):
-                yield 0
-
-    def LostComponent(self, id):
-        # if we lose all our weapons, stop using the Engage tactic and switch to Shove
-        if id in self.weapons: self.weapons.remove(id)
-
-        if not self.weapons:
-            tactic = [x for x in self.tactics if x.name == "Engage"]
-            if len(tactic) > 0:
-                self.tactics.remove(tactic[0])
-
-                self.tactics.append(Tactics.Shove(self))
-                self.tactics.append(Tactics.Charge(self))
-
-        return AI.SuperAI.LostComponent(self, id)
 
     def DebugString(self, id, string):
         if self.debug:

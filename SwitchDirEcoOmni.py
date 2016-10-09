@@ -6,60 +6,19 @@ import Arenas
 import Gooey
 import math
 import Tactics
+from EcoOmni import EcoOmni
 
-class SwitchDirEcoOmni(AI.SuperAI):
+class SwitchDirEcoOmni(EcoOmni):
     "EcoOmni that turns around and drives backward after the primary weapons break."
     name = "SwitchDirEcoOmni"
 
     def __init__(self, **args):
-        AI.SuperAI.__init__(self, **args)
+        EcoOmni.__init__(self, **args)
 
-        self.zone = "weapon"
-        self.triggers = ["Fire"]
-        self.trigger2 = ["Srimech"]
-        self.reloadTime = 0
-        self.reloadDelay = 3
-        self.goodFunction = self.GoodStuckHandler
-        self.wiggletimer = -8
-        self.srimechtimer = 0
-        self.srispintimer = 0
-
-        self.spin_range = 3.0
-
-        if 'range' in args:
-            self.spin_range = args.get('range')
-
-        if 'triggers' in args: self.triggers = args['triggers']
-        if 'reload' in args: self.reloadDelay = args['reload']
-
-        self.triggerIterator = iter(self.triggers)
-
-        self.tactics.append(Tactics.Engage(self))
-
-    def Activate(self, active):
-        if active:
-            if AI.SuperAI.debugging:
-                self.debug = Gooey.Plain("watch", 0, 75, 100, 75)
-                tbox = self.debug.addText("line0", 0, 0, 100, 15)
-                tbox.setText("Throttle")
-                tbox = self.debug.addText("line1", 0, 15, 100, 15)
-                tbox.setText("Turning")
-                tbox = self.debug.addText("line2", 0, 30, 100, 15)
-                tbox.setText("")
-                tbox = self.debug.addText("line3", 0, 45, 100, 15)
-                tbox.setText("")
-
-            self.RegisterSmartZone(self.zone, 1)
-
-        else:
-            # get rid of reference to self
-            self.goodFunction = None
-
-        return AI.SuperAI.Activate(self, active)
 
     def Tick(self):
         # spin weapons briefly at start because for some dumb reason we can't move otherwise.
-        if plus.getTimeElapsed() <= 2:
+        if plus.getTimeElapsed() <= self.spinup:
             self.Input("Spin1", 0, 100)
 
         # spin up depending on enemy's range
@@ -70,7 +29,7 @@ class SwitchDirEcoOmni(AI.SuperAI):
             if enemy is not None and range < self.spin_range and not self.bImmobile:
                 self.Input("Spin1", 0, 100)
             else:
-                if plus.getTimeElapsed() > 2:
+                if plus.getTimeElapsed() > self.spinup:
                     self.Input("Spin1", 0, 0)
 
         if not self.weapons:
@@ -99,7 +58,7 @@ class SwitchDirEcoOmni(AI.SuperAI):
         bReturn = AI.SuperAI.Tick(self)
 
         # call this now so it takes place after other driving commands
-        if self.goodFunction: self.goodFunction(len(targets) > 0)
+        if self.goodFunction: self.goodFunction()
 
         return bReturn
 
@@ -132,22 +91,11 @@ class SwitchDirEcoOmni(AI.SuperAI):
         self.Input('LeftRight', 1, turning)
         self.DebugString(1, "Turning = " + str(int(turning)))
 
-    def InvertHandler(self):
-        # fire all weapons once per second (until we're upright!)
-        while 1:
-            for trigger in self.trigger2:
-                self.Input(trigger, 0, 1)
-
-            for i in range(0, 8):
-                yield 0
-
     def StuckHandler(self):
         "Do nothing because this is a STUPID IDIOT FUNCTION THAT WON'T LET YOU DO A GET SPEED."
-        while 1:
-            for i in range(0, 16):
-                yield 0
+        pass
 
-    def GoodStuckHandler(self, bTarget):
+    def GoodStuckHandler(self):
         if self.bImmobile:
             self.srimechtimer += 1
             # keep driving in one direction as long as we can
@@ -189,12 +137,5 @@ class SwitchDirEcoOmni(AI.SuperAI):
         if id in self.weapons: self.weapons.remove(id)
 
         return AI.SuperAI.LostComponent(self, id)
-
-    def DebugString(self, id, string):
-        if self.debug:
-            if id == 0: self.debug.get("line0").setText(string)
-            elif id == 1: self.debug.get("line1").setText(string)
-            elif id == 2: self.debug.get("line2").setText(string)
-            elif id == 3: self.debug.get("line3").setText(string)
 
 AI.register(SwitchDirEcoOmni)

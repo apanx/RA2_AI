@@ -7,8 +7,9 @@ import Gooey
 import math
 import operator
 import Tactics
+from Omni import Omni
 
-class SpinupOmni2(AI.SuperAI):
+class SpinupOmni2(Omni):
     "Waits for weapon to spin up before moving.  Also reverses weapon if it gets jammed."
     name = "SpinupOmni2"
     # Update 7/24/12: Fixed AI not moving to avoid immobility when the weapon is jammed.
@@ -22,15 +23,9 @@ class SpinupOmni2(AI.SuperAI):
     # 'JamTime' Sets the amount of time (in seconds) the weapon should be jammed for, before reversing the direction in an attempt to unjam it.  For unidirectional weapons, just set to 999.  Default is 1.5.
 
     def __init__(self, **args):
-        AI.SuperAI.__init__(self, **args)
+        Omni.__init__(self, **args)
 
-        self.zone = "weapon"
-        self.triggers = ["Fire"]
-        self.trigger2 = ["Srimech"]
-        self.reloadTime = 0
-        self.reloadDelay = 3
         self.tickFactor = 3.75
-        self.spin_range = 3.0
         self.motorID = 2
         self.motorID2 = -1
         self.RPM = 0
@@ -49,11 +44,6 @@ class SpinupOmni2(AI.SuperAI):
         self.raspberry = 1.5
         self.stopFunction = self.Stop
 
-        if 'range' in args:
-            self.spin_range = args.get('range')
-
-        if 'triggers' in args: self.triggers = args['triggers']
-        if 'reload' in args: self.reloadDelay = args['reload']
         if 'ticks' in args: self.tickFactor = args['ticks']
         if 'MotorID' in args: self.motorID = args['MotorID']
         if 'Motor2ID' in args: self.motorID2 = args['Motor2ID']
@@ -66,18 +56,8 @@ class SpinupOmni2(AI.SuperAI):
         self.tactics.append(Tactics.Engage(self))
 
     def Activate(self, active):
-        plus.AI.__setattr__tickInterval__(self, 0.125/self.tickFactor)
+        self.TickInterval(0.125/self.tickFactor)
         if active:
-            if AI.SuperAI.debugging:
-                self.debug = Gooey.Plain("watch", 0, 75, 100, 75)
-                tbox = self.debug.addText("line0", 0, 0, 100, 15)
-                tbox.setText("Throttle")
-                tbox = self.debug.addText("line1", 0, 15, 100, 15)
-                tbox.setText("Turning")
-                tbox = self.debug.addText("line2", 0, 30, 100, 15)
-                tbox.setText("")
-                tbox = self.debug.addText("line3", 0, 45, 100, 15)
-                tbox.setText("")
             if self.display != 0:
                 self.tauntbox = Gooey.Plain("taunt", 10, 175, 640, 175)
                 tbox = self.tauntbox.addText("taunt1", 10, 0, 640, 15)
@@ -134,7 +114,7 @@ class SpinupOmni2(AI.SuperAI):
                 self.measuring2 = 0
 
         if len(self.RPMhist) > 0:
-            self.avg_RPM = reduce(operator.add, self.RPMhist)/len(self.RPMhist)
+            self.avg_RPM = reduce(operator.add, self.RPMhist) / len(self.RPMhist)
 
         # fire weapon
 
@@ -189,11 +169,11 @@ class SpinupOmni2(AI.SuperAI):
         bReturn = AI.SuperAI.Tick(self)
 
         # call this now so it takes place after other driving commands
-        if self.stopFunction: self.stopFunction(len(targets) > 0)
+        if self.stopFunction: self.stopFunction()
 
         return bReturn
 
-    def Stop(self, bTarget):
+    def Stop(self):
         # stay put if weapon isn't spinning fast
         if self.weapons and not self.bImmobile and (self.RPM < self.targetRPM or (self.motorID2 > 0 and self.RPM2 < self.targetRPM)):
             self.Throttle(0)
@@ -205,13 +185,13 @@ class SpinupOmni2(AI.SuperAI):
         "This default generator is called when the bot is almost immobile."
         while 1:
             # back up for 2 seconds (will stop once we're not immobile)
-            for i in range(0, 16*self.tickFactor):
+            for i in range(0, 16 * self.tickFactor):
                 pos = vector3(self.GetLocation())
                 dir = vector3(self.GetDirection())
                 self.DriveToLocation((pos - dir * 3).asTuple(), True)
                 yield 0
             # go forward for 2 seconds
-            for i in range(0, 16*self.tickFactor):
+            for i in range(0, 16 * self.tickFactor):
                 pos = vector3(self.GetLocation())
                 dir = vector3(self.GetDirection())
                 self.DriveToLocation((pos + dir * 3).asTuple())
@@ -219,7 +199,7 @@ class SpinupOmni2(AI.SuperAI):
 
     def Think(self):
         self.Evaluate()
-        self.countdownToEvaluation = 8*self.tickFactor
+        self.countdownToEvaluation = 8 * self.tickFactor
         # shut down motors while we think
         self.Throttle(0)
         self.Turn(0)
@@ -230,28 +210,7 @@ class SpinupOmni2(AI.SuperAI):
             for trigger in self.trigger2:
                 self.Input(trigger, 0, 1)
 
-            for i in range(0, 8*self.tickFactor):
+            for i in range(0, 8 * self.tickFactor):
                 yield 0
-
-    def LostComponent(self, id):
-        # if we lose all our weapons, stop using the Engage tactic and switch to Shove
-        if id in self.weapons: self.weapons.remove(id)
-
-        if not self.weapons:
-            tactic = [x for x in self.tactics if x.name == "Engage"]
-            if len(tactic) > 0:
-                self.tactics.remove(tactic[0])
-
-                self.tactics.append(Tactics.Shove(self))
-                self.tactics.append(Tactics.Charge(self))
-
-        return AI.SuperAI.LostComponent(self, id)
-
-    def DebugString(self, id, string):
-        if self.debug:
-            if id == 0: self.debug.get("line0").setText(string)
-            elif id == 1: self.debug.get("line1").setText(string)
-            elif id == 2: self.debug.get("line2").setText(string)
-            elif id == 3: self.debug.get("line3").setText(string)
 
 AI.register(SpinupOmni2)
