@@ -20,11 +20,13 @@ class SwitchWepPopup(AI.SuperAI):
         self.zone2 = "SecondaryWep"
         self.triggers3 = ["SecondaryWep"]
         self.triggers2 = ["Srimech"]
+        self.sweapons = []               # used to track our secondary weapons
         self.botinzone = 0
         self.compinzone = 0
         self.comptimer = 0
         self.NoChassisTime = 8
 
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
         if 'NoChassisTime' in args: self.NoChassisTime = args.get('NoChassisTime') * 4
 
         self.tactics.append(Tactics.Engage(self))

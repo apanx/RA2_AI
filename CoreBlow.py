@@ -20,10 +20,13 @@ class CoreBlow(AI.SuperAI):
         self.triggers2 = ["SecondaryWep"]
         self.triggers5 = ["Srimech"]
 
+        self.sweapons = []               # used to track our secondary weapons
+
         self.notMoving = 0
         self.botinzone = 0
         self.spin_range = 3.0
 
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
         if 'range' in args:
             self.spin_range = args.get('range')
 

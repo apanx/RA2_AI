@@ -15,8 +15,12 @@ class Smashbox(AI.SuperAI):
         AI.SuperAI.__init__(self, **args)
 
         self.zone = "weapon"
+        self.sweapons = []               # used to track our secondary weapons
+        self.tweapons = []               # used to track our tertiary weapons
+        self.qweapons = []               # used to track our quaternary weapons
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
+
         self.reloadTime = 0
         self.reloadDelay = 3
 
@@ -24,6 +28,10 @@ class Smashbox(AI.SuperAI):
 
         if 'range' in args:
             self.spin_range = args.get('range')
+
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
+        if 'tweapons' in args: self.tweapons = list(args['tweapons'])
+        if 'qweapons' in args: self.qweapons = list(args['qweapons'])
 
         if 'triggers' in args: self.triggers = args['triggers']
         if 'reload' in args: self.reloadDelay = args['reload']

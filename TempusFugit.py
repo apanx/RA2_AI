@@ -20,11 +20,14 @@ class TempusFugit(AI.SuperAI):
         self.zone = "weapon"
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
+        self.sweapons = []               # used to track our secondary weapons
         self.reloadTime = 0
         self.reloadDelay = 3
         self.contact = 0
 
         self.spin_range = 3.0
+
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
 
         if 'range' in args:
             self.spin_range = args.get('range')

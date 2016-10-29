@@ -22,6 +22,9 @@ class Drum(AI.SuperAI):
         AI.SuperAI.__init__(self, **args)
 
         self.spin_range = 30.0
+        self.sweapons = []               # used to track our secondary weapons
+
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
 
         if 'range' in args:
             self.spin_range = args.get('range')

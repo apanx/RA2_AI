@@ -16,6 +16,7 @@ class FireDelayStop(AI.SuperAI):
 
         self.zone = "weapon"
         self.zone2 = "alsoweapon"
+        self.sweapons = []               # used to track our secondary weapons
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
         self.reloadTime = 0
@@ -28,6 +29,7 @@ class FireDelayStop(AI.SuperAI):
         self.stopcheck = 0
         self.stopFunction = self.Stop
 
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
         if 'reload' in args: self.reloadDelay = args['reload']
         if 'firedelay' in args: self.initdelay = args['firedelay']
         if 'retract' in args: self.retractTime = args['retract']

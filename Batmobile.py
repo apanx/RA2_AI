@@ -16,6 +16,9 @@ class Batmobile(AI.SuperAI):
 
         self.zone1 = "weapon"
         self.zone2 = "underweapon"
+        self.sweapons = []               # used to track our secondary weapons
+        self.tweapons = []               # used to track our tertiary weapons
+        self.qweapons = []               # used to track our quaternary weapons
         self.triggers1 = ["PrimaryWep"]
         self.triggers2 = ["SecondaryWep"]
         self.triggers3 = ["Srimech"]
@@ -25,6 +28,10 @@ class Batmobile(AI.SuperAI):
         self.compinzone = 0
         self.comptimer = 0
         self.NoChassisTime = 8
+
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
+        if 'tweapons' in args: self.tweapons = list(args['tweapons'])
+        if 'qweapons' in args: self.qweapons = list(args['qweapons'])
 
         if 'NoChassisTime' in args: self.NoChassisTime = args.get('NoChassisTime') * 8
 

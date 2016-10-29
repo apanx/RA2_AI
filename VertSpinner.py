@@ -22,12 +22,16 @@ class VertSpinner(AI.SuperAI):
         self.zone = "weapon"
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
+        self.sweapons = []               # used to track our secondary weapons
         self.reloadTime = 0
         self.reloadDelay = 3
 
         self.spin_range = 3.0
 
         self.troll = 1
+
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
+
         if 'TrollDanceZone' in args: self.troll = args['TrollDanceZone']
 
         if 'range' in args:

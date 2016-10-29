@@ -82,9 +82,11 @@ class Flipper2(AI.SuperAI):
 
         self.zone = "flip"
         self.zone2 = "weapon"
+        self.sweapons = []               # used to track our secondary weapons
         self.trigger = "Flip"
         self.upTrack = {}       # for seeing if enemies can drive upside down
         self.move_thresh = 0.5
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
         if 'EnemyMoveRadius' in args: self.move_thresh = args['EnemyMoveRadius']
         self.move_time = 3
         if 'EnemyMoveTime' in args: self.move_time = args['EnemyMoveTime']

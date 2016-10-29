@@ -16,6 +16,10 @@ class Omni(AI.SuperAI):
         AI.SuperAI.__init__(self, **args)
 
         self.zone = "weapon"
+        self.sweapons = []               # used to track our secondary weapons
+        self.tweapons = []               # used to track our tertiary weapons
+        self.qweapons = []               # used to track our quaternary weapons
+
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
         self.reloadTime = 0
@@ -24,6 +28,10 @@ class Omni(AI.SuperAI):
         self.spin_range = 3.0
 
         self.theTactic = "Engage"
+
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
+        if 'tweapons' in args: self.tweapons = list(args['tweapons'])
+        if 'qweapons' in args: self.qweapons = list(args['qweapons'])
 
         if 'range' in args:
             self.spin_range = args.get('range')

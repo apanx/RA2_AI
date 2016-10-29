@@ -19,6 +19,7 @@ class VertSpinner2(AI.SuperAI):
         AI.SuperAI.__init__(self, **args)
 
         self.zone = "weapon"
+        self.sweapons = []               # used to track our secondary weapons
         self.triggers = ["Fire"]
         self.trigger2 = ["Srimech"]
         self.reloadTime = 0
@@ -27,6 +28,8 @@ class VertSpinner2(AI.SuperAI):
         self.cycletime = 12
 
         self.spin_range = 3.0
+
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
 
         if 'range' in args:
             self.spin_range = args.get('range')

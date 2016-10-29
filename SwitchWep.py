@@ -23,8 +23,11 @@ class SwitchWep(AI.SuperAI):
         self.zone4 = "OtherWep2"
         self.triggers4 = ["OtherWep2"]
         self.triggers5 = ["Srimech"]
+        self.sweapons = []               # used to track our secondary weapons
 
         self.spin_range = 3.0
+
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
 
         if 'range' in args:
             self.spin_range = args.get('range')
