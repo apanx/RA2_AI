@@ -34,11 +34,12 @@ class Thwack3(AI.SuperAI):
             elif self.theTactic  == "Shove" : self.tactics.append(Tactics.Shove(self))
             elif self.theTactic  == "Engage" : self.tactics.append(Tactics.Engage(self))
         else: self.tactics.append(Tactics.Engage(self))
-
+        self.sweapons = []               # used to track our secondary weapons
         self.spin_range = 50
         self.turn_range = 3
         self.PreSpinEntrance = 0
         self.turnreset = 0
+        if 'sweapons' in args: self.sweapons = list(args['sweapons'])
         if 'PreSpinEntrance' in args: self.PreSpinEntrance = args.get('PreSpinEntrance')
         self.PreSpinEntranceTimer = 0
         self.timeOfLastBadHit = 0
