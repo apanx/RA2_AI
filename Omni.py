@@ -111,7 +111,7 @@ class Omni(AI.SuperAI):
         if id in self.weapons: self.weapons.remove(id)
 
         if not self.weapons:
-            tactic = [x for x in self.tactics if x.name == "Engage"]
+            tactic = [x for x in self.tactics if x.name == self.theTactic]
             if len(tactic) > 0:
                 self.tactics.remove(tactic[0])
 
