@@ -13,6 +13,8 @@ class OmniSwitch(Omni):
     name = "OmniSwitch"
 
     def __init__(self, **args):
+        Omni.__init__(self, **args)
+
     def Tick(self):
 
         self.Input("Spin", 0, 1)

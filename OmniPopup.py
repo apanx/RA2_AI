@@ -17,7 +17,6 @@ class OmniPopup(Popup):
     def __init__(self, **args):
         Popup.__init__(self, **args)
 
-
         self.spin_range = 40.0
 
     def Tick(self):

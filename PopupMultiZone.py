@@ -36,7 +36,7 @@ class PopupMultiZone(Popup):
             self.RegisterSmartZone("weapon3", 3)
             self.RegisterSmartZone("weapon4", 4)
 
-        return AI.SuperAI.Activate(self, active)
+        return Popup.Activate(self, active)
 
     def Tick(self):
         bReturn = Popup.Tick(self)
@@ -75,7 +75,7 @@ class PopupMultiZone(Popup):
 
     def SmartZoneEvent(self, direction, id, robot, chassis):
         bReturn = Popup.SmartZoneEvent(self, direction, id, robot, chassis)
-        elif id == 2 and self.weapons:
+        if id == 2 and self.weapons:
             if robot > 0:
                 if direction == 1:
                     self.compinzone2 = 1
