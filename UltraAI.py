@@ -35,11 +35,10 @@ class UltraAI(AI.SuperAI):
                 tbox.setText("")
 
             Me = self.GetID()
-            complist = plus.describe(Me).splitlines()
-            for comp in range(len(complist)):
-                max_HP = plus.getHitpoints(Me, comp)
-                plus.damage(Me, comp, max_HP, plus.getLocation(Me))
-                plus.damage(Me, comp, max_HP, plus.getLocation(Me))
+            for i in range(0, self.GetNumComponents()):
+                max_HP = plus.getHitpoints(Me, i)
+                plus.damage(Me, i, max_HP, plus.getLocation(Me))
+                plus.damage(Me, i, max_HP, plus.getLocation(Me))
 
             plus.damage(Me, 0, 41, plus.getLocation(Me))
             plus.damage(Me, 0, 41, plus.getLocation(Me))
