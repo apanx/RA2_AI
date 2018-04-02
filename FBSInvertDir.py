@@ -8,7 +8,7 @@ import math
 import Tactics
 from FBS import FBS
 
-class FBSInvertDir(AI.SuperAI):
+class FBSInvertDir(FBS):
     "Spins!"
     name = "FBSInvertDir"
         #Like FBS, but does not change the direction when inverted.
