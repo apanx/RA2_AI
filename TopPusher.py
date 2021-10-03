@@ -26,21 +26,7 @@ class TopPusher(Omni):
         else:
             self.Input("Push", 0, 0)
 
-        # fire weapon
-        if self.weapons:
-
-            # spin up depending on enemy's range
-            enemy, range = self.GetNearestEnemy()
-
-            if enemy is not None and range < self.spin_range:
-                self.Input("Spin", 0, 1)
-            elif self.GetInputStatus("Spin", 0) != 0:
-                self.Input("Spin", 0, 0)
-
-            targets = [x for x in self.sensors.itervalues() if x.contacts > 0 \
-                and not plus.isDefeated(x.robot)]
-
-        return AI.SuperAI.Tick(self)
+        return Omni.Tick(self)
 
     def SmartZoneEvent(self, direction, id, robot, chassis):
         if id == 1:

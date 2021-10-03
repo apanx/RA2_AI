@@ -42,7 +42,6 @@ class SpinupOmni2(Omni):
         self.spin_reverse = 0
         self.jamTimer = 0
         self.raspberry = 1.5
-        self.stopFunction = self.Stop
 
         if 'ticks' in args: self.tickFactor = args['ticks']
         if 'MotorID' in args: self.motorID = args['MotorID']
@@ -56,7 +55,7 @@ class SpinupOmni2(Omni):
         self.tactics.append(Tactics.Engage(self))
 
     def Activate(self, active):
-        self.TickInterval(0.125/self.tickFactor)
+        self.TickInterval = (0.125/self.tickFactor)
         if active:
             if self.display != 0:
                 self.tauntbox = Gooey.Plain("taunt", 10, 175, 640, 175)
@@ -70,9 +69,6 @@ class SpinupOmni2(Omni):
                 tbox4.setText("")
 
             self.RegisterSmartZone(self.zone, 1)
-        else:
-            # get rid of reference to self
-            self.stopFunction = None
 
         return AI.SuperAI.Activate(self, active)
 
@@ -169,17 +165,15 @@ class SpinupOmni2(Omni):
         bReturn = AI.SuperAI.Tick(self)
 
         # call this now so it takes place after other driving commands
-        if self.stopFunction: self.stopFunction()
 
-        return bReturn
-
-    def Stop(self):
         # stay put if weapon isn't spinning fast
         if self.weapons and not self.bImmobile and (self.RPM < self.targetRPM or (self.motorID2 > 0 and self.RPM2 < self.targetRPM)):
             self.Throttle(0)
         # stay put if the weapon is jammed, to give it a chance to unjam
         if (plus.getTimeElapsed() - self.revolution > self.raspberry or (self.motorID2 > 0 and plus.getTimeElapsed() - self.revolution2 > self.raspberry)) and not self.bImmobile:
             self.Throttle(0)
+
+        return bReturn
 
     def StuckHandler(self):
         "This default generator is called when the bot is almost immobile."
