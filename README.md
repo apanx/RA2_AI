@@ -171,6 +171,10 @@ CUSTOMIZABLE SETTINGS:
 
 Update 6/9/14: Revamped code to reduce occurrence of "flipper staredowns" in flipper vs. flipper battles.  Added ability to become invertible once 'sweapons' components break.
 
+### NeptuniaSys
+Variant of Flipper2 by Bildschirm
+Supports more smartzones compared to Flipper2
+
 ## Flyer
 Spins and fire pistons to fly
 
